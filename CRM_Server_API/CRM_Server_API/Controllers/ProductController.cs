@@ -1,22 +1,34 @@
-﻿using CRM_Business_Layer.Services;
-using CRM_DAL.Entitys;
+﻿using AutoMapper;
+using CRM_Business_Layer.DTO;
+using CRM_Business_Layer.Interfaces;
+using CRM_Server_API.Models.Request;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CRM_Server_API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("product/")]
     [ApiController]
     public class ProductController : ControllerBase
     {
         private readonly IProductService _productService;
+        private readonly IMapper _mapper;
 
-        public ProductController(IProductService productService)
+        public ProductController(IProductService productService, IMapper mapper)
         {
             _productService = productService;
+            _mapper = mapper;
         }
 
-        [HttpGet("GetProductId")]
-        public async Task<IActionResult> GetProductId(int id)
+        [HttpGet]
+        public async Task<IActionResult> GetAllProducts()
+        {
+            var result = await _productService.GetAllProductsAsync();
+            result = result.ToList();
+            return Ok(result);
+        }
+
+        [HttpGet("get_by_id")]
+        public async Task<IActionResult> GetProductId(Guid id)
         {
             var product = await _productService.GetProductByIdAsync(id);
             if (product == null)
@@ -25,30 +37,18 @@ namespace CRM_Server_API.Controllers
             return Ok(product);
         }
 
-        [HttpPost("AddProduct")]
-        public async Task<IActionResult> AddProduct(
-            [FromForm] string name,
-            [FromForm] decimal price,
-            [FromForm] string description,
-            [FromForm] string category,
-            [FromForm] string availabilityStatus)
+        [HttpPost("add")]
+        public async Task<IActionResult> AddProduct([FromForm] ProductRequest productRequest)
         {
-            var product = new Product
-            {
-                Name = name,
-                Price = price,
-                Description = description,
-                Category = category,
-                AvailabilityStatus = availabilityStatus
-            };
+            ProductDTO productDTO = _mapper.Map<ProductDTO>(productRequest);
+            await _productService.AddProductAsync(productDTO);
 
-            await _productService.AddProductAsync(product);
-            return CreatedAtAction(nameof(GetProductId), new { id = product.ProductId }, product);
+            return Ok(productDTO);
         }
 
         [HttpPut("UpdateProductId")]
         public async Task<IActionResult> UpdateProduct(
-            int id,
+            Guid id,
             [FromForm] string name,
             [FromForm] decimal price,
             [FromForm] string description,
@@ -70,7 +70,7 @@ namespace CRM_Server_API.Controllers
         }
 
         [HttpDelete("DeleteProductId")]
-        public async Task<IActionResult> DeleteProduct(int id)
+        public async Task<IActionResult> DeleteProduct(Guid id)
         {
             var product = await _productService.GetProductByIdAsync(id);
             if (product == null)

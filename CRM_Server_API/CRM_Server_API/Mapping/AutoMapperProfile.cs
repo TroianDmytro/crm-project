@@ -11,7 +11,12 @@ namespace CRM_Server_API.Mapping
         {
             CreateMap<Client, ClientDTO>().ReverseMap();
             CreateMap<ClientRequest, ClientDTO>();
-        }
 
+            CreateMap<Product, ProductDTO>().ReverseMap();
+            CreateMap<ProductRequest, ProductDTO>();
+
+            CreateMap<Deal, DealDTO>().ReverseMap();
+
+        }
     }
 }

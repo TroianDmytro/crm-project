@@ -1,18 +1,19 @@
-﻿using CRM_Business_Layer.Services;
-using CRM_DAL.Entitys;
+﻿using CRM_Business_Layer.DTO;
+using CRM_Business_Layer.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CRM_Server_API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("deal/")]
     [ApiController]
     public class DealController : ControllerBase
     {
         private readonly IDealService _dealService;
-
-        public DealController(IDealService dealService)
+        private readonly IDealProductService _dealProductService;
+        public DealController(IDealService dealService, IDealProductService dealProductService)
         {
             _dealService = dealService;
+            _dealProductService = dealProductService;
         }
 
         [HttpGet("AllDealsList")]
@@ -23,7 +24,7 @@ namespace CRM_Server_API.Controllers
         }
 
         [HttpGet("GetDealId")]
-        public async Task<IActionResult> GetDealId(int id)
+        public async Task<IActionResult> GetDealId(Guid id)
         {
             var deal = await _dealService.GetDealByIdAsync(id);
             if (deal == null)
@@ -33,15 +34,14 @@ namespace CRM_Server_API.Controllers
         }
 
         [HttpPost("AddDeal")]
-        public async Task<IActionResult> AddDeal([FromForm] string title, [FromForm] decimal amount, [FromForm] string status, [FromForm] int customerId)
+        public async Task<IActionResult> AddDeal([FromForm] string title, [FromForm] decimal amount, [FromForm] string status)
         {
-            var deal = new Deal
+            var deal = new DealDTO
             {
                 Title = title,
                 Amount = amount,
                 Status = status,
                 CreatedAt = DateTime.UtcNow,
-                CustomerId = customerId
             };
 
             await _dealService.AddDealAsync(deal);
@@ -49,11 +49,11 @@ namespace CRM_Server_API.Controllers
         }
 
         [HttpPost("AddProductToDeal")]
-        public async Task<IActionResult> AddProductToDeal([FromForm] int dealId, [FromForm] int productId, [FromForm] int quantity)
+        public async Task<IActionResult> AddProductToDeal([FromForm] DealProductDTO dealProductDTO)
         {
             try
             {
-                await _dealService.AddProductToDealAsync(dealId, productId, quantity);
+                await _dealProductService.AddProductToDeal(dealProductDTO);
                 return Ok("Product added to deal successfully");
             }
             catch (KeyNotFoundException ex)
@@ -62,10 +62,8 @@ namespace CRM_Server_API.Controllers
             }
         }
 
-
-
         [HttpPut("UpdateDealId")]
-        public async Task<IActionResult> UpdateDeal(int id, [FromForm] string title, [FromForm] decimal amount, [FromForm] string status, [FromForm] int customerId)
+        public async Task<IActionResult> UpdateDeal(Guid id, [FromForm] string title, [FromForm] decimal amount, [FromForm] string status, [FromForm] int customerId)
         {
             var deal = await _dealService.GetDealByIdAsync(id);
             if (deal == null)
@@ -74,14 +72,13 @@ namespace CRM_Server_API.Controllers
             deal.Title = title;
             deal.Amount = amount;
             deal.Status = status;
-            deal.CustomerId = customerId;
 
             await _dealService.UpdateDealAsync(deal);
             return NoContent();
         }
 
         [HttpDelete("DeleteDeal")]
-        public async Task<IActionResult> DeleteDeal(int id)
+        public async Task<IActionResult> DeleteDeal(Guid id)
         {
             var deal = await _dealService.GetDealByIdAsync(id);
             if (deal == null)

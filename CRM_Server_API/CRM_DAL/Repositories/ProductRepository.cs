@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CRM_DAL.Repositories
 {
-    public class ProductRepository : IProductRepository
+    public class ProductRepository : IRepository<Product>
     {
         private readonly AzureDbContext _context;
 
@@ -14,34 +14,44 @@ namespace CRM_DAL.Repositories
             _context = context;
         }
 
-        public async Task<Product> GetProductByIdAsync(int id)
+        public async Task<IEnumerable<Product>> GetAll()
         {
-            return await _context.Products
-                          .Include(p => p.DealProducts)
-                          .ThenInclude(dp => dp.Deal)
-                          .FirstOrDefaultAsync(p => p.ProductId == id);
+            var result = await _context.Products
+                //.Include(p => p.DealProducts)
+                //.ThenInclude(dp => dp.Deal)
+                .ToListAsync();
+
+            return result;
         }
 
-        public async Task AddProductAsync(Product product)
+        public async Task<Product?> Get(Guid id)
         {
-            await _context.Products.AddAsync(product);
-            await _context.SaveChangesAsync();
+            var result = await _context.Products
+               .Include(p => p.DealProducts)
+               .ThenInclude(dp => dp.Deal)
+               .FirstOrDefaultAsync(p => p.ProductId == id);
+
+            return result;
         }
 
-        public async Task UpdateProductAsync(Product product)
+        public async Task Create(Product item)
         {
-            _context.Products.Update(product);
-            await _context.SaveChangesAsync();
+            await _context.Products.AddAsync(item);
+        }
+        public async Task Update(Product item)
+        {
+            _context.Products.Update(item);
         }
 
-        public async Task DeleteProductAsync(int id)
+        public async Task Delete(Guid id)
         {
-            var product = await _context.Products.FindAsync(id);
-            if (product != null)
-            {
-                _context.Products.Remove(product);
-                await _context.SaveChangesAsync();
-            }
+            await _context.Products.Where(d => d.ProductId== id).ExecuteDeleteAsync();
+        }
+
+        public async Task<IEnumerable<Product>> Find(Func<Product, bool> predicate)
+        {
+            var result = _context.Products.Where(predicate).ToList();
+            return result;
         }
     }
 }

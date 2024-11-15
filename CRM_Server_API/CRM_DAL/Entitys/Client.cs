@@ -14,10 +14,11 @@ namespace CRM_DAL.Entitys
         public string Address { get; set; } = string.Empty; // Адреса клієнта
         public string CompanyName { get; set; } = string.Empty; // Назва компанії клієнта
         public string? Notes {  get; set; } = string.Empty;//Опис
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow; // Дата створення запису
+        public DateTime CreatedAt { get; set; } // Дата створення запису
         public DateTime? UpdatedAt { get; set; } // Дата оновлення запису
 
         public bool IsActive { get; set; } = true; // Статус активності клієнта
+        public ICollection<Deal> Deals { get; set; } // Связь с сделками
 
 
     }

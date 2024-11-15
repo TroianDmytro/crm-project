@@ -1,5 +1,5 @@
 ﻿using CRM_Business_Layer.Infrastructure;
-using CRM_DAL.Entitys;
+using CRM_DAL.Entitys.Auth;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 

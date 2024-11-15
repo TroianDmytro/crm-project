@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CRM_DAL.Repositories
 {
-    public class DealRepository : IDealRepository
+    public class DealRepository : IRepository<Deal>
     {
         private readonly AzureDbContext _context;
 
@@ -14,54 +14,46 @@ namespace CRM_DAL.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Deal>> GetAllDealsAsync()
+        public async Task<IEnumerable<Deal>> GetAll()
         {
-            return await _context.Deals
-                .Include(d => d.Customer)
-                .Include(d => d.DealProducts)
-                    .ThenInclude(dp => dp.Product)
+            var result = await _context.Deals
+                .Include(d=>d.DealProducts)
+                .ThenInclude(dp=>dp.Product)
                 .ToListAsync();
+            return result;
         }
 
-        public async Task<Deal> GetDealByIdAsync(int id)
+        public async Task<Deal?> Get(Guid id)
         {
-            return await _context.Deals
-                .Include(d => d.Customer)
+            var result = await _context.Deals
                 .Include(d => d.DealProducts)
-                    .ThenInclude(dp => dp.Product)
+                .ThenInclude(dp => dp.Product)
                 .FirstOrDefaultAsync(d => d.DealId == id);
+            return result;
         }
 
-        public async Task AddDealAsync(Deal deal)
+        public async Task Create(Deal item)
         {
-            await _context.Deals.AddAsync(deal);
-            await _context.SaveChangesAsync();
+            await _context.Deals.AddAsync(item);
         }
 
-        public async Task UpdateDealAsync(Deal deal)
+        public async Task Update(Deal item)
         {
-            _context.Deals.Update(deal);
-            await _context.SaveChangesAsync();
+            await Task.Run(() => _context.Deals.Update(item));
         }
 
-        public async Task DeleteDealAsync(int id)
+        public async Task Delete(Guid id)
         {
-            var deal = await _context.Deals.FindAsync(id);
-            if (deal != null)
-            {
-                _context.Deals.Remove(deal);
-                await _context.SaveChangesAsync();
-            }
+            await _context.Deals.Where(d=>d.DealId==id).ExecuteDeleteAsync();
         }
-        public async Task<decimal> GetProductPriceAsync(int productId)
+
+        public async Task<IEnumerable<Deal>> Find(Func<Deal, bool> predicate)
         {
-            var product = await _context.Products
-                .FirstOrDefaultAsync(p => p.ProductId == productId);
-
-            if (product == null)
-                throw new KeyNotFoundException($"Product with ID {productId} not found");
-
-            return product.Price;
+            var result = await Task.Run(() => _context.Deals.Where(predicate).ToList());
+            return result;
         }
+
+
+
     }
 }

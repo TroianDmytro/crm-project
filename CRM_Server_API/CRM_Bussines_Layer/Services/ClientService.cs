@@ -36,11 +36,11 @@ namespace CRM_Business_Layer.Services
         {
             var client = _mapper.Map<Client>(newClient);
 
-            client.CreatedAt = TimeUA.CurrentTime();
-            client.UpdatedAt = TimeUA.CurrentTime();
+            client.CreatedAt = await TimeUA.CurrentTimeAsync();
+            client.UpdatedAt = await TimeUA.CurrentTimeAsync();
 
             await _unitOfWork.Client.Create(client);
-            await _unitOfWork.CommitChanges();
+            await _unitOfWork.CommitChangesAsync();
 
             return newClient;
         }
@@ -49,10 +49,10 @@ namespace CRM_Business_Layer.Services
         {
             var client = _mapper.Map<Client>(updatedClient);
 
-            client.UpdatedAt = TimeUA.CurrentTime();
+            client.UpdatedAt = await TimeUA.CurrentTimeAsync();
 
             await _unitOfWork.Client.Update(client);
-            await _unitOfWork.CommitChanges();
+            await _unitOfWork.CommitChangesAsync();
 
             return updatedClient;
         }
@@ -60,7 +60,7 @@ namespace CRM_Business_Layer.Services
         public async Task DeleteClient(Guid id)
         {
             await _unitOfWork.Client.Delete(id);
-            await _unitOfWork.CommitChanges();
+            await _unitOfWork.CommitChangesAsync();
         }
 
         public void Dispose()

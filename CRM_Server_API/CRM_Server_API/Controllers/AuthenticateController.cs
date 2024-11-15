@@ -1,5 +1,5 @@
 using CRM_Business_Layer.Interfaces;
-using CRM_DAL.Entitys;
+using CRM_DAL.Entitys.Auth;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CRM_Server_API.Controllers

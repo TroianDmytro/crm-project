@@ -1,4 +1,4 @@
-﻿namespace CRM_DAL.Entitys
+﻿namespace CRM_DAL.Entitys.Auth
 {
     public static class UserRoles
     {

@@ -1,54 +1,77 @@
-﻿using CRM_DAL.EF;
+﻿using AutoMapper;
+using CRM_Business_Layer.DTO;
+using CRM_Business_Layer.Infrastructure;
+using CRM_Business_Layer.Interfaces;
 using CRM_DAL.Entitys;
 using CRM_DAL.Interfaces;
-using Microsoft.EntityFrameworkCore;
 
 namespace CRM_Business_Layer.Services
 {
     public class DealService : IDealService
     {
-        private readonly IDealRepository _dealRepository;
-        private readonly AzureDbContext _dbContext;
-
-        public DealService(IDealRepository dealRepository, AzureDbContext dbContext)
+        private readonly IUnitOfWork _context;
+        private readonly IMapper _mapper;
+        public DealService(IUnitOfWork context, IMapper mapper)
         {
-            _dealRepository = dealRepository;
-            _dbContext = dbContext;
+            _context = context;
+            _mapper = mapper;
+        }
+       
+        public async Task<IEnumerable<DealDTO>> GetAllDealsAsync()
+        {
+            var allDeal = await _context.Deal.GetAll();
+            var result = _mapper.Map<List<DealDTO>>(allDeal);
+            return result;
         }
 
-        public async Task<IEnumerable<Deal>> GetAllDealsAsync() => await _dealRepository.GetAllDealsAsync();
-
-        public async Task<Deal> GetDealByIdAsync(int id) => await _dealRepository.GetDealByIdAsync(id);
-
-        public async Task AddDealAsync(Deal deal) => await _dealRepository.AddDealAsync(deal);
-
-        public async Task UpdateDealAsync(Deal deal) => await _dealRepository.UpdateDealAsync(deal);
-
-        public async Task DeleteDealAsync(int id) => await _dealRepository.DeleteDealAsync(id);
-
-        public async Task<decimal> GetProductPriceAsync(int productId)
+        public async Task<DealDTO> GetDealByIdAsync(Guid id)
         {
-            return await _dealRepository.GetProductPriceAsync(productId);
+            var deal = await _context.Deal.Get(id);
+            var result = _mapper.Map<DealDTO>(deal);
+            return result;
         }
 
-        public async Task AddProductToDealAsync(int dealId, int productId, int quantity)
+        public async Task AddDealAsync(DealDTO dealDTO)
         {
-            var product = await _dbContext.Products.FirstOrDefaultAsync(p => p.ProductId == productId);
-            if (product == null)
-            {
-                throw new KeyNotFoundException($"Product with ID {productId} not found");
-            }
+            var deal = _mapper.Map<Deal>(dealDTO);
 
-            var dealProduct = new DealProduct
-            {
-                DealId = dealId,
-                ProductId = productId,
-                Quantity = quantity,
-                Price = product.Price
-            };
+            deal.CreatedAt = await TimeUA.CurrentTimeAsync();
+            deal.UpdatedAt = await TimeUA.CurrentTimeAsync();
 
-            _dbContext.DealProducts.Add(dealProduct);
-            await _dbContext.SaveChangesAsync();
+            await _context.Deal.Create(deal);
+            await _context.CommitChangesAsync();
         }
+
+        public async Task UpdateDealAsync(DealDTO dealDTO)
+        {
+            var deal = _mapper.Map<Deal>(dealDTO);
+            deal.UpdatedAt = await TimeUA.CurrentTimeAsync();
+
+            await _context.Deal.Update(deal);
+            await _context.CommitChangesAsync();
+        }
+
+        public async Task DeleteDealAsync(Guid id)
+        {
+            await _context.Deal.Delete(id);
+            await _context.CommitChangesAsync();
+        }
+
+        public void Dispose()
+        {
+            _context.Dispose();
+        }
+
+
+        public Task<decimal> GetProductPriceAsync(Guid productId)
+        {
+            throw new NotImplementedException();
+        }
+
+        //public Task AddProductToDealAsync(Guid dealId, Guid productId, int quantityTransaction)
+        //{
+        //    throw new NotImplementedException();
+        //}
+        
     }
 }

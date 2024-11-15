@@ -45,9 +45,6 @@ namespace CRM_DAL.Repositories
             var result =  _context.Clients.Where(predicate).ToList();
             return result;
         }
-
-       
-
         
     }
 }

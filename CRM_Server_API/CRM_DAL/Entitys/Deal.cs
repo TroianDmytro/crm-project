@@ -1,13 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
 
 namespace CRM_DAL.Entitys
 {
     public class Deal
     {
         [Key]
-        public int DealId { get; set; }
+        public Guid DealId { get; set; }
 
         [Required]
         [MaxLength(100)]
@@ -23,15 +22,15 @@ namespace CRM_DAL.Entitys
         [MaxLength(50)]
         public string Status { get; set; } // Этап сделки, например, "новая", "в процессе", "завершена"
 
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; } // Дата створення запису
+        public DateTime? UpdatedAt { get; set; } // Дата оновлення запису
 
         // Связь с клиентом
-        [ForeignKey("Customer")]
-        public int CustomerId { get; set; }
+        [ForeignKey("Clients")]
+        public Guid ClientId { get; set; }
+        public Client Client { get; set; }
 
-        [JsonIgnore] // Добавил игнор так как была проблема с Серелизацией и циклической зависимостью между customer and deal
-        public Customer Customer { get; set; } // Навигационное свойство
-
+        //список сделок
         public ICollection<DealProduct> DealProducts { get; set; }
     }
 }

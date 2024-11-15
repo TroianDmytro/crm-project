@@ -63,14 +63,9 @@ builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 builder.Services.AddScoped<IAuthenticateService, AuthenticateService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWorkEF>();
 builder.Services.AddScoped<IClientService, ClientService>();
-//// ad customer 
-builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
-builder.Services.AddScoped<ICustomerService, CustomerService>();
 //add deal
-builder.Services.AddScoped<IDealRepository, DealRepository>();
 builder.Services.AddScoped<IDealService, DealService>();
 //add product
-builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IProductService, ProductService>();
 
 builder.Services.AddCors(options =>
