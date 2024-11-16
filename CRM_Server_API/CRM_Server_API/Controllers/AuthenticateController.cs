@@ -1,9 +1,11 @@
+using CRM_Business_Layer.DTO.AuthDTO;
 using CRM_Business_Layer.Interfaces;
-using CRM_DAL.Entitys.Auth;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CRM_Server_API.Controllers
 {
+
     [Route("auth/")]
     [ApiController]
     public class AuthenticateController : ControllerBase
@@ -16,7 +18,7 @@ namespace CRM_Server_API.Controllers
 
         [HttpPost]
         [Route("login")]
-        public async Task<IActionResult> Login([FromBody] LoginModel model)
+        public async Task<IActionResult> Login([FromBody] LoginModelDTO model)
         {
             var result = await _authenticate.Login(model);
 
@@ -26,9 +28,10 @@ namespace CRM_Server_API.Controllers
             return Ok(result);
         }
 
+        //[Authorize(Roles = UserRoles.Admin)]
         [HttpPost]
-        [Route("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterModel model)
+        [Route("register_manager")]
+        public async Task<IActionResult> Register([FromBody] RegisterModelDTO model)
         {
             var result = await _authenticate.Register(model);
 
@@ -38,9 +41,10 @@ namespace CRM_Server_API.Controllers
             return Ok(result);
         }
 
+        //[Authorize(Roles = UserRoles.Boss)]
         [HttpPost]
-        [Route("register-admin")]
-        public async Task<IActionResult> RegisterAdmin([FromBody] RegisterModel model)
+        [Route("register_admin")]
+        public async Task<IActionResult> RegisterAdmin([FromBody] RegisterModelDTO model)
         {
             var result = await _authenticate.RegisterAdmin(model);
 

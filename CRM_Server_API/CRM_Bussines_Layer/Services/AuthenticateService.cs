@@ -1,4 +1,5 @@
-﻿using CRM_Business_Layer.Infrastructure;
+﻿using CRM_Business_Layer.DTO.AuthDTO;
+using CRM_Business_Layer.Infrastructure;
 using CRM_Business_Layer.Interfaces;
 using CRM_DAL.Entitys.Auth;
 using Microsoft.AspNetCore.Identity;
@@ -12,26 +13,26 @@ namespace CRM_Business_Layer.Services
 {
     public class AuthenticateService : IAuthenticateService
     {
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly UserManager<EmployeeRegisterModel> _userEmployee;
+        private readonly RoleManager<IdentityRole> _roleEmployee;
         private readonly IConfiguration _configuration;
 
         public AuthenticateService(
-            UserManager<IdentityUser> userManager,
-            RoleManager<IdentityRole> roleManager,
+            UserManager<EmployeeRegisterModel> userEmployee,
+            RoleManager<IdentityRole> roleEmployee,
             IConfiguration configuration)
         {
-            _userManager = userManager;
-            _roleManager = roleManager;
+            _userEmployee = userEmployee;
+            _roleEmployee = roleEmployee;
             _configuration = configuration;
         }
 
-        public async Task<TokenDTO?> Login(LoginModel loginModel)
+        public async Task<TokenDTO?> Login(LoginModelDTO loginModel)
         {
-            var user = await _userManager.FindByNameAsync(loginModel.UserName);
-            if (user != null && await _userManager.CheckPasswordAsync(user, loginModel.Password))
+            var user = await _userEmployee.FindByNameAsync(loginModel.UserName);
+            if (user != null && await _userEmployee.CheckPasswordAsync(user, loginModel.Password))
             {
-                var userRoles = await _userManager.GetRolesAsync(user);
+                var userRoles = await _userEmployee.GetRolesAsync(user);
 
                 var authClaims = new List<Claim>
                 {
@@ -56,67 +57,67 @@ namespace CRM_Business_Layer.Services
         }
 
 
-        public async Task<ResponseAuthenticate> Register(RegisterModel registerModel)
+        public async Task<ResponseAuthenticate> Register(RegisterModelDTO registerModel)
         {
-            var userExists = await _userManager.FindByNameAsync(registerModel.UserName);
+            var userExists = await _userEmployee.FindByNameAsync(registerModel.UserName);
             if (userExists != null)
                 return new ResponseAuthenticate { Status = "Error", Message = "Manager already exists!" };
 
-            IdentityUser user = new()
+            EmployeeRegisterModel user = new()
             {
                 Email = registerModel.Email,
                 SecurityStamp = Guid.NewGuid().ToString(),
                 UserName = registerModel.UserName
 
             };
-            var result = await _userManager.CreateAsync(user, registerModel.Password);
+            var result = await _userEmployee.CreateAsync(user, registerModel.Password);
             if (!result.Succeeded)
                 return new ResponseAuthenticate { Status = "Error", Message = "Manager creation failed! Please check user details and try again." };
 
             // Перевірка, чи існує роль "User"; якщо ні, то створюємо її
-            if (!await _roleManager.RoleExistsAsync(UserRoles.Manager))
+            if (!await _roleEmployee.RoleExistsAsync(UserRolesDTO.Manager))
             {
-                await _roleManager.CreateAsync(new IdentityRole(UserRoles.Manager));
+                await _roleEmployee.CreateAsync(new IdentityRole(UserRolesDTO.Manager));
             }
 
             // Призначення ролі "Manager" користувачеві, якщо роль існує
-            if (await _roleManager.RoleExistsAsync(UserRoles.Manager))
+            if (await _roleEmployee.RoleExistsAsync(UserRolesDTO.Manager))
             {
-                await _userManager.AddToRoleAsync(user, UserRoles.Manager);
+                await _userEmployee.AddToRoleAsync(user, UserRolesDTO.Manager);
             }
 
             return new ResponseAuthenticate { Status = "Success", Message = "Manager created successfully!" };
         }
 
 
-        public async Task<ResponseAuthenticate> RegisterAdmin(RegisterModel registerModel)
+        public async Task<ResponseAuthenticate> RegisterAdmin(RegisterModelDTO registerModel)
         {
-            var userExists = await _userManager.FindByNameAsync(registerModel.UserName);
+            var userExists = await _userEmployee.FindByNameAsync(registerModel.UserName);
             if (userExists != null)
                 return new ResponseAuthenticate { Status = "Error", Message = "User already exists!" };
 
-            IdentityUser user = new()
+            EmployeeRegisterModel user = new()
             {
                 Email = registerModel.Email,
                 SecurityStamp = Guid.NewGuid().ToString(),
                 UserName = registerModel.UserName
             };
-            var result = await _userManager.CreateAsync(user, registerModel.Password);
+            var result = await _userEmployee.CreateAsync(user, registerModel.Password);
             if (!result.Succeeded)
                 return new ResponseAuthenticate { Status = "Error", Message = "User creation failed! Please check user details and try again." };
 
-            if (!await _roleManager.RoleExistsAsync(UserRoles.Admin))
-                await _roleManager.CreateAsync(new IdentityRole(UserRoles.Admin));
-            if (!await _roleManager.RoleExistsAsync(UserRoles.Manager))
-                await _roleManager.CreateAsync(new IdentityRole(UserRoles.Manager));
+            if (!await _roleEmployee.RoleExistsAsync(UserRolesDTO.Admin))
+                await _roleEmployee.CreateAsync(new IdentityRole(UserRolesDTO.Admin));
+            if (!await _roleEmployee.RoleExistsAsync(UserRolesDTO.Manager))
+                await _roleEmployee.CreateAsync(new IdentityRole(UserRolesDTO.Manager));
 
-            if (await _roleManager.RoleExistsAsync(UserRoles.Admin))
+            if (await _roleEmployee.RoleExistsAsync(UserRolesDTO.Admin))
             {
-                await _userManager.AddToRoleAsync(user, UserRoles.Admin);
+                await _userEmployee.AddToRoleAsync(user, UserRolesDTO.Admin);
             }
-            if (await _roleManager.RoleExistsAsync(UserRoles.Admin))
+            if (await _roleEmployee.RoleExistsAsync(UserRolesDTO.Admin))
             {
-                await _userManager.AddToRoleAsync(user, UserRoles.Manager);
+                await _userEmployee.AddToRoleAsync(user, UserRolesDTO.Manager);
             }
 
             return new ResponseAuthenticate { Status = "Success", Message = "User created successfully!" };

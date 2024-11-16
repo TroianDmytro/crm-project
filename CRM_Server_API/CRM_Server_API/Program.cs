@@ -10,6 +10,7 @@ using CRM_DAL.Interfaces;
 using CRM_Server_API.Mapping;
 using CRM_Business_Layer.Services;
 using CRM_DAL.Repositories;
+using CRM_DAL.Entitys.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
@@ -18,7 +19,7 @@ ConfigurationManager configuration = builder.Configuration;
 builder.Services.AddDbContext<AzureDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("DmitrysConnectionStr")));
 
 // For Identity
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+builder.Services.AddIdentity<EmployeeRegisterModel, IdentityRole>()
     .AddEntityFrameworkStores<AzureDbContext>()
     .AddDefaultTokenProviders();
 

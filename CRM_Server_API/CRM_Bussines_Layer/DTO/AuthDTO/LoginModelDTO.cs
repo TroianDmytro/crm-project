@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CRM_DAL.Entitys.Auth
+namespace CRM_Business_Layer.DTO.AuthDTO
 {
-    public class LoginModel
+    public class LoginModelDTO
     {
         //Login
         [Required(ErrorMessage = "UserName is required")]

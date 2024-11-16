@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using CRM_DAL.Entitys;
+using CRM_DAL.Entitys.Auth;
 
 namespace CRM_DAL.EF
 {
-    public class AzureDbContext : IdentityDbContext<IdentityUser>
+    public class AzureDbContext : IdentityDbContext<EmployeeRegisterModel>
     {
         public AzureDbContext(DbContextOptions<AzureDbContext> options) : base(options) { }
 
