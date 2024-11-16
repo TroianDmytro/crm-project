@@ -1,4 +1,5 @@
-﻿using CRM_DAL.Entitys;
+﻿using CRM_Business_Layer.Infrastructure;
+using CRM_DAL.Entitys;
 
 namespace CRM_Business_Layer.DTO
 {
@@ -6,12 +7,12 @@ namespace CRM_Business_Layer.DTO
     {
         public Guid DealId { get; set; }
         public string Title { get; set; }
-        public decimal Amount { get; set; } // Сумма сделки
-        public DateTime ExpectedCloseDate { get; set; } // Предполагаемая дата закрытия
-        public string Status { get; set; } // Этап сделки, например, "новая", "в процессе", "завершена"
-        public DateTime CreatedAt { get; set; }
+        public decimal Amount { get; set; } = 0; // Сумма сделки
+        public DateTime ExpectedCloseDate { get; set; }= TimeUA.CurrentTimeAsync().Result; // Предполагаемая дата закрытия
+        public string Status { get; set; } = "New"; // Этап сделки, например, "новая", "в процессе", "завершена"
+        public DateTime CreatedAt { get; set; } = TimeUA.CurrentTimeAsync().Result;
         public Guid ClientId { get; set; }// Связь с клиентом
-        public Client Client { get; set; }
-        public ICollection<Product> Products { get; set; }//список сделок
+        public ClientDTO Client { get; set; }
+        public ICollection<Product> Products { get; set; } = [];//список сделок
     }
 }

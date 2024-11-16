@@ -5,7 +5,6 @@ using CRM_Business_Layer.Interfaces;
 using CRM_DAL.EF;
 using CRM_DAL.Entitys;
 using CRM_DAL.Interfaces;
-using Microsoft.EntityFrameworkCore;
 
 namespace CRM_Business_Layer.Services
 {
@@ -35,7 +34,7 @@ namespace CRM_Business_Layer.Services
             var clientsDTO = _mapper.Map<List<ClientDTO>>(clients);
             return clientsDTO;
         }
-
+       
         public async Task<ClientDTO> CreateClient(ClientDTO newClient)
         {
             var client = _mapper.Map<Client>(newClient);
@@ -61,13 +60,7 @@ namespace CRM_Business_Layer.Services
             return updatedClient;
         }
 
-        public async Task<Client> GetClientByIdAsync(Guid id)
-        {
-            var client = await _context.Clients
-                                        .FirstOrDefaultAsync(c => c.Id == id);
-
-            return client;  
-        }
+       
 
         public async Task DeleteClient(Guid id)
         {

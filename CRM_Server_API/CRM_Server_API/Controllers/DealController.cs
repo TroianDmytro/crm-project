@@ -1,7 +1,7 @@
-﻿using CRM_Business_Layer.DTO;
+﻿using AutoMapper;
+using CRM_Business_Layer.DTO;
 using CRM_Business_Layer.Interfaces;
-using CRM_Business_Layer.Services;
-using CRM_DAL.Entitys;
+using CRM_Server_API.Models.Request;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CRM_Server_API.Controllers
@@ -13,8 +13,10 @@ namespace CRM_Server_API.Controllers
         private readonly IDealService _dealService;
         private readonly IDealProductService _dealProductService;
         private readonly IClientService _clientService;
-        public DealController(IDealService dealService, IDealProductService dealProductService, IClientService clientService)
+        private readonly IMapper _mapper;
+        public DealController(IMapper mapper, IDealService dealService, IDealProductService dealProductService, IClientService clientService)
         {
+            _mapper = mapper;
             _dealService = dealService;
             _dealProductService = dealProductService;
             _clientService = clientService;
@@ -36,30 +38,22 @@ namespace CRM_Server_API.Controllers
 
             return Ok(deal);
         }
+
         [HttpPost("AddDeal")]
-        public async Task<IActionResult> AddDeal([FromForm] AddDealDTO addDealDTO)
+        public async Task<IActionResult> AddDeal([FromForm] DealRequest dealRequest)
         {
-             var client = await _clientService.GetClientByIdAsync(addDealDTO.ClientId);
-             if (client == null)
+            var client = await _clientService.GetClientById(dealRequest.ClientId);
+
+            if (client == null)
                 return NotFound("Client with this Id not found.");
 
-              var deal = new DealDTO
-              {
-                  DealId = Guid.NewGuid(), 
-                  Title = addDealDTO.Title,
-                  Amount = addDealDTO.Amount,
-                  Status = addDealDTO.Status,
-                  CreatedAt = DateTime.UtcNow,
-                  ExpectedCloseDate = DateTime.UtcNow.AddMonths(1), 
-                  ClientId = addDealDTO.ClientId,
-                  Client = client,
-                  Products = new List<Product>()  
-              };
+            DealDTO dealDTO = _mapper.Map<DealDTO>(dealRequest);
 
-              await _dealService.AddDealAsync(deal);
+            dealDTO.DealId = Guid.NewGuid();
 
-              return Ok(deal);            
-            
+            await _dealService.AddDealAsync(dealDTO);
+
+            return Ok(dealDTO);
         }
 
         [HttpPost("AddProductToDeal")]
@@ -86,7 +80,7 @@ namespace CRM_Server_API.Controllers
             deal.Title = updateDealDTO.Title;
             deal.Amount = updateDealDTO.Amount;
             deal.Status = updateDealDTO.Status;
-            deal.ClientId = updateDealDTO.ClientId; 
+            deal.ClientId = updateDealDTO.ClientId;
 
             await _dealService.UpdateDealAsync(deal);
 

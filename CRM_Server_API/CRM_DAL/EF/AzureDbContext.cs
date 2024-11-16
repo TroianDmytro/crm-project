@@ -37,6 +37,16 @@ namespace CRM_DAL.EF
             builder.Entity<Product>()
                 .Property(p => p.Price)
                 .HasPrecision(8, 2); // точність і масштаб
+
+            // Настройка связи "один ко многим"
+            builder.Entity<Deal>()
+                .HasOne(d => d.Client)          // У одной сделки есть один клиент
+                .WithMany(c => c.Deals)         // У одного клиента может быть много сделок
+                .HasForeignKey(d => d.ClientId); // Внешний ключ в таблице "Deal"
+                
+
+
+
             base.OnModelCreating(builder);
         }
     }

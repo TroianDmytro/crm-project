@@ -22,20 +22,22 @@ namespace CRM_Server_API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllProducts()
         {
-            var result = await _productService.GetAllProductsAsync();
+            IEnumerable<ProductDTO> result = await _productService.GetAllProductsAsync();
             result = result.ToList();
+
             return Ok(result);
         }
 
         [HttpGet("get_by_id")]
         public async Task<IActionResult> GetProductId(Guid id)
         {
-            var product = await _productService.GetProductByIdAsync(id);
+            ProductDTO product = await _productService.GetProductByIdAsync(id);
             if (product == null)
                 return NotFound("Product with this Id not found");
 
             return Ok(product);
         }
+
 
         [HttpPost("add")]
         public async Task<IActionResult> AddProduct([FromForm] ProductRequest productRequest)
@@ -46,7 +48,7 @@ namespace CRM_Server_API.Controllers
             return Ok(productDTO);
         }
 
-        [HttpPut("UpdateProductId")]
+        [HttpPut("UpdateProduct")]
         public async Task<IActionResult> UpdateProduct(Guid id,[FromBody] UpdateProductDTO updateProductDTO) 
         {
             var product = await _productService.GetProductByIdAsync(id);

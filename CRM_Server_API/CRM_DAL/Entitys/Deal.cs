@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace CRM_DAL.Entitys
 {
@@ -26,7 +25,6 @@ namespace CRM_DAL.Entitys
         public DateTime? UpdatedAt { get; set; } // Дата оновлення запису
 
         // Связь с клиентом
-        [ForeignKey("Clients")]
         public Guid ClientId { get; set; }
         public Client Client { get; set; }
 

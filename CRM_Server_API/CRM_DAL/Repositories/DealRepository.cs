@@ -17,6 +17,7 @@ namespace CRM_DAL.Repositories
         public async Task<IEnumerable<Deal>> GetAll()
         {
             var result = await _context.Deals
+                .Include(d=>d.Client)
                 .Include(d=>d.DealProducts)
                 .ThenInclude(dp=>dp.Product)
                 .ToListAsync();
