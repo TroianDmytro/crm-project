@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using CRM_DAL.Entitys;
 using CRM_DAL.Entitys.Auth;
+using System.Reflection.Emit;
 
 namespace CRM_DAL.EF
 {
@@ -29,6 +30,13 @@ namespace CRM_DAL.EF
                 .WithMany(dp => dp.DealProducts)
                 .HasForeignKey(dp => dp.ProductId);
 
+            builder.Entity<Deal>()
+               .Property(d => d.Amount)
+               .HasPrecision(8, 2); // 8 - точність, 2 - кількість знаків після коми
+
+            builder.Entity<Product>()
+                .Property(p => p.Price)
+                .HasPrecision(8, 2); // точність і масштаб
             base.OnModelCreating(builder);
         }
     }

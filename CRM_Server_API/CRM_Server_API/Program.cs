@@ -17,7 +17,7 @@ var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
 
 // For Entity Framework
-builder.Services.AddDbContext<AzureDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("BogdanConnectionStr")));
+builder.Services.AddDbContext<AzureDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("AzureConnectionStr")));
 
 // For Identity
 builder.Services.AddIdentity<EmployeeRegisterModel, IdentityRole>()

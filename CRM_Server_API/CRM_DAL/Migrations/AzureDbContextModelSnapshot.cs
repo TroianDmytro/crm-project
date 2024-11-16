@@ -171,7 +171,8 @@ namespace CRM_DAL.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(8, 2)
+                        .HasColumnType("decimal(8,2)");
 
                     b.Property<Guid>("ClientId")
                         .HasColumnType("uniqueidentifier");
@@ -249,7 +250,8 @@ namespace CRM_DAL.Migrations
                         .HasColumnType("varbinary(max)");
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(8, 2)
+                        .HasColumnType("decimal(8,2)");
 
                     b.Property<int>("QuantityStock")
                         .HasColumnType("int");
