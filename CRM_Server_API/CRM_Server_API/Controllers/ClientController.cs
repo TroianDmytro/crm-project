@@ -55,13 +55,14 @@ namespace CRM_Server_API.Controllers
         [HttpPut("edit/{id}")] // настроить дату обновления
         public async Task<IActionResult> Put(Guid id, [FromBody] ClientRequest clientRequest)
         {
-            ClientDTO newClientDTO = _mapper.Map<ClientDTO>(clientRequest);
-            ClientDTO clientDTO = await _clientService.UpdateClient(newClientDTO);
+            ClientDTO clientDTO = _mapper.Map<ClientDTO>(clientRequest);
+            clientDTO.Id = id;
+            ClientDTO updateClientDTO = await _clientService.UpdateClient(clientDTO);
 
-            if (clientDTO == null)
+            if (updateClientDTO == null)
                 return BadRequest();
 
-            return Ok(clientDTO);
+            return Ok(updateClientDTO);
         }
 
         // DELETE  client/remove/5

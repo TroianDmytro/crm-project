@@ -18,5 +18,7 @@
 
         public bool IsActive { get; set; } = true; // Статус активності клієнта
 
+        public ICollection<DealDTO> DealDTOs { get; set; }
+
     }
 }

@@ -28,7 +28,7 @@ namespace CRM_Business_Layer.Services
 
         public async Task<ProductDTO?> GetProductByIdAsync(Guid id)
         {
-            var result = await _context.Product.Get(id);  
+            var result = await _context.Product.Get(id);
             var resultDTO = _mapper.Map<ProductDTO>(result);
             return resultDTO;
         }
@@ -48,7 +48,7 @@ namespace CRM_Business_Layer.Services
 
             if (existingProduct != null)
             {
-                _context.DbContext.Entry(existingProduct).State = EntityState.Detached;  
+                _context.DbContext.Entry(existingProduct).State = EntityState.Detached;
             }
 
             _context.Product.Update(product);
@@ -62,9 +62,12 @@ namespace CRM_Business_Layer.Services
             await _context.CommitChangesAsync();
         }
 
-        public void Dispose()
+        public void Dispose() => _context.Dispose();
+
+        public async Task<bool> ProductIsExists(Guid productId)
         {
-            _context.Dispose();
+            bool result = await _context.Product.IsExists(productId);
+            return result;
         }
     }
 }

@@ -54,7 +54,10 @@ namespace CRM_DAL.Repositories
             return result;
         }
 
-
-
+        public async Task<bool> IsExists(Guid id)
+        {
+            bool result = await _context.Deals.AnyAsync(d=>d.DealId == id);
+            return result;
+        }
     }
 }

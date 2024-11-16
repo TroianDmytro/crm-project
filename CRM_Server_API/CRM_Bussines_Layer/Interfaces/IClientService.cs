@@ -9,6 +9,7 @@ namespace CRM_Business_Layer.Interfaces
         Task<ClientDTO> CreateClient(ClientDTO newClient);
         Task<ClientDTO> UpdateClient(ClientDTO updatedClient);
         Task DeleteClient(Guid id);
+        Task<bool> ClientIsExists(Guid clientId);
         void Dispose();
         //Task<Client> GetClientByIdAsync(Guid clientId);
     }

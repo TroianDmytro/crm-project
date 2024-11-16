@@ -7,11 +7,10 @@ namespace CRM_Business_Layer.Interfaces
         Task<IEnumerable<DealDTO>> GetAllDealsAsync();
         Task<DealDTO> GetDealByIdAsync(Guid id);
         Task AddDealAsync(DealDTO deal);
-        Task UpdateDealAsync(DealDTO deal);
+        Task UpdateDealAsync(Guid id, DealUpdate dealUpdate);
         Task DeleteDealAsync(Guid id);
         Task<decimal> GetProductPriceAsync(Guid productId);
-        //Task AddProductToDealAsync(Guid dealId, Guid productId, int quantityTransaction);
-
+        Task<bool> DealIsExists(Guid dealId);
         void Dispose();
     }
 }

@@ -15,13 +15,17 @@ namespace CRM_DAL.Repositories
 
         public async Task<Client?> Get(Guid id)
         {
-            var result = await _context.Clients.FirstOrDefaultAsync(c => c.Id == id); 
+            var result = await _context.Clients
+                                        .Include(c=>c.Deals)
+                                        .FirstOrDefaultAsync(c => c.Id == id); 
             return result;
         }
 
         public async Task<IEnumerable<Client>> GetAll()
         {
-            var result = await _context.Clients.ToListAsync();
+            var result = await _context.Clients
+                                        .Include(c => c.Deals)
+                                        .ToListAsync();
             return result;
         }
 
@@ -45,6 +49,11 @@ namespace CRM_DAL.Repositories
             var result =  _context.Clients.Where(predicate).ToList();
             return result;
         }
-        
+
+        public async Task<bool> IsExists(Guid id)
+        {
+            bool result = await _context.Clients.AnyAsync(c=>c.Id == id);
+            return result;
+        }
     }
 }

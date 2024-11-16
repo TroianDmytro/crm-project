@@ -16,7 +16,7 @@ namespace CRM_Business_Layer.Services
             _context = context;
             _mapper = mapper;
         }
-       
+
         public async Task<IEnumerable<DealDTO>> GetAllDealsAsync()
         {
             var allDeal = await _context.Deal.GetAll();
@@ -42,24 +42,18 @@ namespace CRM_Business_Layer.Services
             await _context.CommitChangesAsync();
         }
 
-        public async Task UpdateDealAsync(DealDTO dealDTO)
+        public async Task UpdateDealAsync(Guid id, DealUpdate dealUpdate)
         {
-            var deal = await _context.Deal.Get(dealDTO.DealId);
+            var deal = await _context.Deal.Get(id) ?? throw new InvalidOperationException();
 
-            if (deal == null)
-            {
-                throw new InvalidOperationException();
-            }
+            deal.Title = dealUpdate.Title ?? deal.Title;
+            deal.Amount = dealUpdate.Amount ?? deal.Amount;
+            deal.Status = dealUpdate.Status ?? deal.Status;
+            deal.ExpectedCloseDate = dealUpdate.ExpectedCloseDate ?? deal.ExpectedCloseDate;
 
-            deal.Title = dealDTO.Title;
-            deal.Amount = dealDTO.Amount;
-            deal.Status = dealDTO.Status;
-            deal.ExpectedCloseDate = dealDTO.ExpectedCloseDate;
-
-            _context.Deal.Update(deal);
-            await _context.CommitChangesAsync();  
+            await _context.Deal.Update(deal);
+            await _context.CommitChangesAsync();
         }
-
 
         public async Task DeleteDealAsync(Guid id)
         {
@@ -67,23 +61,21 @@ namespace CRM_Business_Layer.Services
             await _context.CommitChangesAsync();
         }
 
-        public void Dispose()
-        {
-            _context.Dispose();
-        }
+        public void Dispose() => _context.Dispose();
 
+        public async Task<bool> DealIsExists(Guid dealId)
+        {
+            bool result = await _context.Deal.IsExists(dealId);
+            return result;
+        }
 
         public Task<decimal> GetProductPriceAsync(Guid productId)
         {
             throw new NotImplementedException();
         }
 
-        //public Task AddProductToDealAsync(Guid dealId, Guid productId, int quantityTransaction)
-        //{
-        //    throw new NotImplementedException();
-        //}
 
 
-        
+
     }
 }

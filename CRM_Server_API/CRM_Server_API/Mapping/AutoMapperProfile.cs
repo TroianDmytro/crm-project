@@ -18,7 +18,19 @@ namespace CRM_Server_API.Mapping
             CreateMap<ProductRequest, ProductDTO>();
 
             CreateMap<Deal, DealDTO>().ReverseMap();
+            CreateMap<Client, ClientDTO>()
+            .ForMember(
+                dest => dest.DealDTOs,        // Указываем свойство в DTO
+                opt => opt.MapFrom(src => src.Deals) // Связываем его с оригинальным свойством
+            )
+            .ReverseMap()
+            .ForMember(
+                dest => dest.Deals,          // Указываем свойство в оригинальной модели
+                opt => opt.MapFrom(src => src.DealDTOs) // Связываем его с DTO
+            );
             CreateMap<DealRequest, DealDTO>();
+
+
             CreateMap<DealProduct, DealProductDTO>().ReverseMap();
 
             CreateMap<RegisterModelDTO, EmployeeRegisterModel>();

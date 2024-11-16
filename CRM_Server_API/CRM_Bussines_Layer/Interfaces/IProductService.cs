@@ -9,6 +9,7 @@ namespace CRM_Business_Layer.Interfaces
         Task AddProductAsync(ProductDTO product);
         Task UpdateProductAsync(ProductDTO product);
         Task DeleteProductAsync(Guid id);
+        Task<bool> ProductIsExists(Guid productId);
         void Dispose();
     }
 }

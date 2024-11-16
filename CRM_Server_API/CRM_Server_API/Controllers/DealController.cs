@@ -22,14 +22,15 @@ namespace CRM_Server_API.Controllers
             _clientService = clientService;
         }
 
-        [HttpGet("AllDealsList")]
+        [HttpGet("deals/")]
         public async Task<IActionResult> GetDealList()
         {
             var dealsList = await _dealService.GetAllDealsAsync();
             return Ok(dealsList);
         }
 
-        [HttpGet("GetDealId")]
+
+        [HttpGet("get_by_id/")]
         public async Task<IActionResult> GetDealId(Guid id)
         {
             var deal = await _dealService.GetDealByIdAsync(id);
@@ -39,7 +40,7 @@ namespace CRM_Server_API.Controllers
             return Ok(deal);
         }
 
-        [HttpPost("AddDeal")]
+        [HttpPost("create/")]
         public async Task<IActionResult> AddDeal([FromForm] DealRequest dealRequest)
         {
             var client = await _clientService.GetClientById(dealRequest.ClientId);
@@ -56,7 +57,7 @@ namespace CRM_Server_API.Controllers
             return Ok(dealDTO);
         }
 
-        [HttpPost("AddProductToDeal")]
+        [HttpPost("add_product_to_deal/")]
         public async Task<IActionResult> AddProductToDeal([FromForm] DealProductDTO dealProductDTO)
         {
             try
@@ -70,29 +71,24 @@ namespace CRM_Server_API.Controllers
             }
         }
 
-        [HttpPut("UpdateDealId")]
-        public async Task<IActionResult> UpdateDeal(Guid id, [FromBody] UpdateDealDTO updateDealDTO)
+        [HttpPut("edit/")]
+        public async Task<IActionResult> UpdateDeal(Guid id, [FromBody] DealUpdate dealUpdate)
         {
-            var deal = await _dealService.GetDealByIdAsync(id);
-            if (deal == null)
+            bool deal = await _dealService.DealIsExists(id);
+            if (deal)
                 return NotFound("Deal with this Id not found");
 
-            deal.Title = updateDealDTO.Title;
-            deal.Amount = updateDealDTO.Amount;
-            deal.Status = updateDealDTO.Status;
-            deal.ClientId = updateDealDTO.ClientId;
+            await _dealService.UpdateDealAsync(id,dealUpdate);
 
-            await _dealService.UpdateDealAsync(deal);
-
-            return NoContent();
+            return Ok();
         }
 
 
-        [HttpDelete("DeleteDeal")]
+        [HttpDelete("delete/")]
         public async Task<IActionResult> DeleteDeal(Guid id)
         {
-            var deal = await _dealService.GetDealByIdAsync(id);
-            if (deal == null)
+            var deal = await _dealService.DealIsExists(id);
+            if (deal)
                 return NotFound("Deal with this Id not found");
 
             await _dealService.DeleteDealAsync(id);

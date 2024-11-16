@@ -2,6 +2,7 @@
 using CRM_DAL.Entitys;
 using CRM_DAL.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace CRM_DAL.Repositories
 {
@@ -51,6 +52,12 @@ namespace CRM_DAL.Repositories
         public async Task<IEnumerable<Product>> Find(Func<Product, bool> predicate)
         {
             var result = _context.Products.Where(predicate).ToList();
+            return result;
+        }
+
+        public async Task<bool> IsExists(Guid id)
+        {
+            var result = await _context.Products.AnyAsync(p=>p.ProductId == id);
             return result;
         }
     }

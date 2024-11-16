@@ -5,6 +5,7 @@ using CRM_Business_Layer.Interfaces;
 using CRM_DAL.EF;
 using CRM_DAL.Entitys;
 using CRM_DAL.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace CRM_Business_Layer.Services
 {
@@ -60,18 +61,19 @@ namespace CRM_Business_Layer.Services
             return updatedClient;
         }
 
-       
-
         public async Task DeleteClient(Guid id)
         {
             await _unitOfWork.Client.Delete(id);
             await _unitOfWork.CommitChangesAsync();
         }
 
-        public void Dispose()
-        {
-            _unitOfWork.Dispose();
-        }
+        public void Dispose() => _unitOfWork.Dispose();
+        
 
+        public async Task<bool> ClientIsExists(Guid clientId)
+        {
+            bool result = await _context.Clients.AnyAsync(c=>c.Id == clientId);
+            return result;
+        }
     }
 }
