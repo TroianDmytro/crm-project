@@ -2,8 +2,10 @@
 using CRM_Business_Layer.DTO;
 using CRM_Business_Layer.Infrastructure;
 using CRM_Business_Layer.Interfaces;
+using CRM_DAL.EF;
 using CRM_DAL.Entitys;
 using CRM_DAL.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace CRM_Business_Layer.Services
 {
@@ -11,11 +13,13 @@ namespace CRM_Business_Layer.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly AzureDbContext _context;
 
-        public ClientService(IUnitOfWork unitOfWork, IMapper mapper)
+        public ClientService(IUnitOfWork unitOfWork, IMapper mapper, AzureDbContext context)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _context = context;
         }
 
         public async Task<ClientDTO> GetClientById(Guid id)
@@ -55,6 +59,14 @@ namespace CRM_Business_Layer.Services
             await _unitOfWork.CommitChangesAsync();
 
             return updatedClient;
+        }
+
+        public async Task<Client> GetClientByIdAsync(Guid id)
+        {
+            var client = await _context.Clients
+                                        .FirstOrDefaultAsync(c => c.Id == id);
+
+            return client;  
         }
 
         public async Task DeleteClient(Guid id)

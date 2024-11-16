@@ -44,12 +44,22 @@ namespace CRM_Business_Layer.Services
 
         public async Task UpdateDealAsync(DealDTO dealDTO)
         {
-            var deal = _mapper.Map<Deal>(dealDTO);
-            deal.UpdatedAt = await TimeUA.CurrentTimeAsync();
+            var deal = await _context.Deal.Get(dealDTO.DealId);
 
-            await _context.Deal.Update(deal);
-            await _context.CommitChangesAsync();
+            if (deal == null)
+            {
+                throw new InvalidOperationException();
+            }
+
+            deal.Title = dealDTO.Title;
+            deal.Amount = dealDTO.Amount;
+            deal.Status = dealDTO.Status;
+            deal.ExpectedCloseDate = dealDTO.ExpectedCloseDate;
+
+            _context.Deal.Update(deal);
+            await _context.CommitChangesAsync();  
         }
+
 
         public async Task DeleteDealAsync(Guid id)
         {
@@ -72,6 +82,8 @@ namespace CRM_Business_Layer.Services
         //{
         //    throw new NotImplementedException();
         //}
+
+
         
     }
 }

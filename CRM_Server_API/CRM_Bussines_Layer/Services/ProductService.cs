@@ -3,6 +3,7 @@ using CRM_Business_Layer.DTO;
 using CRM_Business_Layer.Interfaces;
 using CRM_DAL.Entitys;
 using CRM_DAL.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace CRM_Business_Layer.Services
 {
@@ -10,6 +11,7 @@ namespace CRM_Business_Layer.Services
     {
         private readonly IUnitOfWork _context;
         private readonly IMapper _mapper;
+
 
         public ProductService(IUnitOfWork context, IMapper mapper)
         {
@@ -26,10 +28,11 @@ namespace CRM_Business_Layer.Services
 
         public async Task<ProductDTO?> GetProductByIdAsync(Guid id)
         {
-            var result = await _context.Product.Get(id);
+            var result = await _context.Product.Get(id);  
             var resultDTO = _mapper.Map<ProductDTO>(result);
             return resultDTO;
         }
+
         public async Task AddProductAsync(ProductDTO productDTO)
         {
             Product product = _mapper.Map<Product>(productDTO);
@@ -40,7 +43,16 @@ namespace CRM_Business_Layer.Services
         public async Task UpdateProductAsync(ProductDTO productDTO)
         {
             Product product = _mapper.Map<Product>(productDTO);
-            await _context.Product.Update(product);
+
+            var existingProduct = await _context.Product.Get(product.ProductId);
+
+            if (existingProduct != null)
+            {
+                _context.DbContext.Entry(existingProduct).State = EntityState.Detached;  
+            }
+
+            _context.Product.Update(product);
+
             await _context.CommitChangesAsync();
         }
 

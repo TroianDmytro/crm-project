@@ -11,6 +11,7 @@ namespace CRM_Business_Layer.Interfaces
         Task DeleteDealAsync(Guid id);
         Task<decimal> GetProductPriceAsync(Guid productId);
         //Task AddProductToDealAsync(Guid dealId, Guid productId, int quantityTransaction);
+
         void Dispose();
     }
 }

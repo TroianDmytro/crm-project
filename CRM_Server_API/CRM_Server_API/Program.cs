@@ -10,24 +10,28 @@ using CRM_DAL.Interfaces;
 using CRM_Server_API.Mapping;
 using CRM_Business_Layer.Services;
 using CRM_DAL.Repositories;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
 
 // For Entity Framework
-builder.Services.AddDbContext<AzureDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("DmitrysConnectionStr")));
+builder.Services.AddDbContext<AzureDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("BogdanConnectionStr")));
 
 // For Identity
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<AzureDbContext>()
     .AddDefaultTokenProviders();
 
-
+//Remove field $id
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
-        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+
+        options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase; 
     });
+
 
 
 // Adding Authentication
@@ -67,6 +71,9 @@ builder.Services.AddScoped<IClientService, ClientService>();
 builder.Services.AddScoped<IDealService, DealService>();
 //add product
 builder.Services.AddScoped<IProductService, ProductService>();
+
+builder.Services.AddScoped<IDealProductService, DealProductService>();
+
 
 builder.Services.AddCors(options =>
 {

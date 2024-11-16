@@ -17,6 +17,16 @@ namespace CRM_Server_API.Mapping
 
             CreateMap<Deal, DealDTO>().ReverseMap();
 
+            CreateMap<DealProductDTO, DealProduct>()
+                .ForMember(dest => dest.DealId, opt => opt.MapFrom(src => src.DealId))
+                .ForMember(dest => dest.ProductId, opt => opt.MapFrom(src => src.ProductId))
+                .ForMember(dest => dest.QuantityTransaction, opt => opt.MapFrom(src => src.QuantityTransaction));
+
+            CreateMap<DealProduct, DealProductDTO>()
+                .ForMember(dest => dest.DealId, opt => opt.MapFrom(src => src.DealId))
+                .ForMember(dest => dest.ProductId, opt => opt.MapFrom(src => src.ProductId))
+                .ForMember(dest => dest.QuantityTransaction, opt => opt.MapFrom(src => src.QuantityTransaction));
+
         }
     }
 }

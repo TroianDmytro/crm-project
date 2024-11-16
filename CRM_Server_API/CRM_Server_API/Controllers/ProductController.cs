@@ -47,27 +47,22 @@ namespace CRM_Server_API.Controllers
         }
 
         [HttpPut("UpdateProductId")]
-        public async Task<IActionResult> UpdateProduct(
-            Guid id,
-            [FromForm] string name,
-            [FromForm] decimal price,
-            [FromForm] string description,
-            [FromForm] string category,
-            [FromForm] string availabilityStatus)
+        public async Task<IActionResult> UpdateProduct(Guid id,[FromBody] UpdateProductDTO updateProductDTO) 
         {
             var product = await _productService.GetProductByIdAsync(id);
             if (product == null)
                 return NotFound("Product with this Id not found");
 
-            product.Name = name;
-            product.Price = price;
-            product.Description = description;
-            product.Category = category;
-            product.AvailabilityStatus = availabilityStatus;
+            product.Name = updateProductDTO.Name;
+            product.Price = updateProductDTO.Price;
+            product.Description = updateProductDTO.Description;
+            product.Category = updateProductDTO.Category;
+            product.AvailabilityStatus = updateProductDTO.AvailabilityStatus;
 
             await _productService.UpdateProductAsync(product);
-            return NoContent();
+            return NoContent(); 
         }
+
 
         [HttpDelete("DeleteProductId")]
         public async Task<IActionResult> DeleteProduct(Guid id)
