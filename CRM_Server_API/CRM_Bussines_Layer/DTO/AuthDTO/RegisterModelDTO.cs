@@ -12,7 +12,7 @@
         public string? Patronymic { get; set; } = string.Empty;
 
         //Login
-        public string? UserName { get; set; }
+        public string UserName { get; set; }
 
         // Адреса 
         public string? Address { get; set; } = string.Empty;
@@ -28,8 +28,8 @@
 
         public string? Department { get; set; }
 
-        public string? Email { get; set; }
+        public string Email { get; set; }
 
-        public string? Password { get; set; }
+        public string Password { get; set; }
     }
 }

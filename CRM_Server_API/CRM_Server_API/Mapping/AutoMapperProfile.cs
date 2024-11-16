@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using CRM_Business_Layer.DTO;
+using CRM_Business_Layer.DTO.AuthDTO;
 using CRM_DAL.Entitys;
+using CRM_DAL.Entitys.Auth;
 using CRM_Server_API.Models.Request;
 
 namespace CRM_Server_API.Mapping
@@ -17,6 +19,8 @@ namespace CRM_Server_API.Mapping
 
             CreateMap<Deal, DealDTO>().ReverseMap();
             CreateMap<DealProduct, DealProductDTO>().ReverseMap();
+
+            CreateMap<RegisterModelDTO, EmployeeRegisterModel>();
 
         }
     }

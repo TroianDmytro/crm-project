@@ -13,7 +13,6 @@ namespace CRM_DAL.Entitys.Auth
         [StringLength(100, ErrorMessage = "Максимальна довжина прізвища — 100 символів")]
         public string LastName { get; set; } = string.Empty; // Прізвище
 
-        [Required(ErrorMessage = "Прізвище обов'язкове")]
         [StringLength(100, ErrorMessage = "Максимальна довжина прізвища — 100 символів")]
         public string? Patronymic {  get; set; }=string.Empty;
         // Адреса 
@@ -25,7 +24,6 @@ namespace CRM_DAL.Entitys.Auth
         public DateTime DateOfBirth { get; set; }
 
         //Дата начала работы
-        [Required(ErrorMessage = "Дата початку роботи обов'язкова")]
         [DataType(DataType.Date)]
         public DateTime? HireDate { get; set; }
 

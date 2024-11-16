@@ -1,4 +1,5 @@
-﻿using CRM_Business_Layer.DTO.AuthDTO;
+﻿using AutoMapper;
+using CRM_Business_Layer.DTO.AuthDTO;
 using CRM_Business_Layer.Infrastructure;
 using CRM_Business_Layer.Interfaces;
 using CRM_DAL.Entitys.Auth;
@@ -16,15 +17,17 @@ namespace CRM_Business_Layer.Services
         private readonly UserManager<EmployeeRegisterModel> _userEmployee;
         private readonly RoleManager<IdentityRole> _roleEmployee;
         private readonly IConfiguration _configuration;
-
+        private readonly IMapper _mapper;
         public AuthenticateService(
             UserManager<EmployeeRegisterModel> userEmployee,
             RoleManager<IdentityRole> roleEmployee,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            IMapper mapper)
         {
             _userEmployee = userEmployee;
             _roleEmployee = roleEmployee;
             _configuration = configuration;
+            _mapper = mapper;
         }
 
         public async Task<TokenDTO?> Login(LoginModelDTO loginModel)
@@ -63,13 +66,17 @@ namespace CRM_Business_Layer.Services
             if (userExists != null)
                 return new ResponseAuthenticate { Status = "Error", Message = "Manager already exists!" };
 
-            EmployeeRegisterModel user = new()
-            {
-                Email = registerModel.Email,
-                SecurityStamp = Guid.NewGuid().ToString(),
-                UserName = registerModel.UserName
+            EmployeeRegisterModel user = _mapper.Map<EmployeeRegisterModel>(registerModel);
+            //EmployeeRegisterModel user = new()
+            //{
+            //    Name = registerModel.Name,
+            //    LastName = registerModel.LastName,
 
-            };
+            //    Email = registerModel.Email,
+            //    SecurityStamp = Guid.NewGuid().ToString(),
+            //    UserName = registerModel.UserName
+
+            //};
             var result = await _userEmployee.CreateAsync(user, registerModel.Password);
             if (!result.Succeeded)
                 return new ResponseAuthenticate { Status = "Error", Message = "Manager creation failed! Please check user details and try again." };
@@ -96,12 +103,13 @@ namespace CRM_Business_Layer.Services
             if (userExists != null)
                 return new ResponseAuthenticate { Status = "Error", Message = "User already exists!" };
 
-            EmployeeRegisterModel user = new()
-            {
-                Email = registerModel.Email,
-                SecurityStamp = Guid.NewGuid().ToString(),
-                UserName = registerModel.UserName
-            };
+            EmployeeRegisterModel user = _mapper.Map<EmployeeRegisterModel>(registerModel);
+            //EmployeeRegisterModel user = new()
+            //{
+            //    Email = registerModel.Email,
+            //    SecurityStamp = Guid.NewGuid().ToString(),
+            //    UserName = registerModel.UserName
+            //};
             var result = await _userEmployee.CreateAsync(user, registerModel.Password);
             if (!result.Succeeded)
                 return new ResponseAuthenticate { Status = "Error", Message = "User creation failed! Please check user details and try again." };
