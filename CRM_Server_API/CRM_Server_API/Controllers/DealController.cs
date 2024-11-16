@@ -1,5 +1,7 @@
 ﻿using CRM_Business_Layer.DTO;
 using CRM_Business_Layer.Interfaces;
+using CRM_Business_Layer.Services;
+using CRM_DAL.Entitys;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CRM_Server_API.Controllers
@@ -10,10 +12,12 @@ namespace CRM_Server_API.Controllers
     {
         private readonly IDealService _dealService;
         private readonly IDealProductService _dealProductService;
-        public DealController(IDealService dealService, IDealProductService dealProductService)
+        private readonly IClientService _clientService;
+        public DealController(IDealService dealService, IDealProductService dealProductService, IClientService clientService)
         {
             _dealService = dealService;
             _dealProductService = dealProductService;
+            _clientService = clientService;
         }
 
         [HttpGet("AllDealsList")]
@@ -32,20 +36,30 @@ namespace CRM_Server_API.Controllers
 
             return Ok(deal);
         }
-
         [HttpPost("AddDeal")]
-        public async Task<IActionResult> AddDeal([FromForm] string title, [FromForm] decimal amount, [FromForm] string status)
+        public async Task<IActionResult> AddDeal([FromForm] AddDealDTO addDealDTO)
         {
-            var deal = new DealDTO
-            {
-                Title = title,
-                Amount = amount,
-                Status = status,
-                CreatedAt = DateTime.UtcNow,
-            };
+             var client = await _clientService.GetClientByIdAsync(addDealDTO.ClientId);
+             if (client == null)
+                return NotFound("Client with this Id not found.");
 
-            await _dealService.AddDealAsync(deal);
-            return CreatedAtAction(nameof(GetDealId), new { id = deal.DealId }, deal);
+              var deal = new DealDTO
+              {
+                  DealId = Guid.NewGuid(), 
+                  Title = addDealDTO.Title,
+                  Amount = addDealDTO.Amount,
+                  Status = addDealDTO.Status,
+                  CreatedAt = DateTime.UtcNow,
+                  ExpectedCloseDate = DateTime.UtcNow.AddMonths(1), 
+                  ClientId = addDealDTO.ClientId,
+                  Client = client,
+                  Products = new List<Product>()  
+              };
+
+              await _dealService.AddDealAsync(deal);
+
+              return Ok(deal);            
+            
         }
 
         [HttpPost("AddProductToDeal")]
@@ -63,19 +77,22 @@ namespace CRM_Server_API.Controllers
         }
 
         [HttpPut("UpdateDealId")]
-        public async Task<IActionResult> UpdateDeal(Guid id, [FromForm] string title, [FromForm] decimal amount, [FromForm] string status, [FromForm] int customerId)
+        public async Task<IActionResult> UpdateDeal(Guid id, [FromBody] UpdateDealDTO updateDealDTO)
         {
             var deal = await _dealService.GetDealByIdAsync(id);
             if (deal == null)
                 return NotFound("Deal with this Id not found");
 
-            deal.Title = title;
-            deal.Amount = amount;
-            deal.Status = status;
+            deal.Title = updateDealDTO.Title;
+            deal.Amount = updateDealDTO.Amount;
+            deal.Status = updateDealDTO.Status;
+            deal.ClientId = updateDealDTO.ClientId; 
 
             await _dealService.UpdateDealAsync(deal);
+
             return NoContent();
         }
+
 
         [HttpDelete("DeleteDeal")]
         public async Task<IActionResult> DeleteDeal(Guid id)

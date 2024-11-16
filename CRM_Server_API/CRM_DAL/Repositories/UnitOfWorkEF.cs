@@ -1,11 +1,13 @@
 ﻿using CRM_DAL.EF;
 using CRM_DAL.Entitys;
 using CRM_DAL.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace CRM_DAL.Repositories
 {
     public class UnitOfWorkEF : IUnitOfWork
     {
+
         private bool disposed = false;
 
         private readonly AzureDbContext _context;
@@ -17,7 +19,7 @@ namespace CRM_DAL.Repositories
         public IRepository<Product> Product => _productRepository;
         public IRepository<Deal> Deal => _dealRepository;
         public IRepositoryDealProduct DealProduct =>  _dealProductRepository;
-
+        public AzureDbContext DbContext => _context;
         public UnitOfWorkEF(AzureDbContext context)
         {
             _context = context;

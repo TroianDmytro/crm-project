@@ -1,4 +1,5 @@
 ﻿using CRM_Business_Layer.DTO;
+using CRM_DAL.Entitys;
 
 namespace CRM_Business_Layer.Interfaces
 {
@@ -10,5 +11,6 @@ namespace CRM_Business_Layer.Interfaces
         Task<ClientDTO> UpdateClient(ClientDTO updatedClient);
         Task DeleteClient(Guid id);
         void Dispose();
+        Task<Client> GetClientByIdAsync(Guid clientId);
     }
 }

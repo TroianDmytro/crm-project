@@ -1,4 +1,6 @@
-﻿using CRM_DAL.Entitys;
+﻿using CRM_DAL.EF;
+using CRM_DAL.Entitys;
+using Microsoft.EntityFrameworkCore;
 
 namespace CRM_DAL.Interfaces
 {
@@ -8,7 +10,7 @@ namespace CRM_DAL.Interfaces
         IRepository<Product> Product { get; }
         IRepository<Deal> Deal { get; }
         IRepositoryDealProduct DealProduct { get; }
-
+        AzureDbContext DbContext { get; }
         Task CommitChangesAsync();
     }
 }
