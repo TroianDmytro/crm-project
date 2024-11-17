@@ -18,8 +18,8 @@ namespace CRM_DAL.Repositories
         public async Task<IEnumerable<Product>> GetAll()
         {
             var result = await _context.Products
-                //.Include(p => p.DealProducts)
-                //.ThenInclude(dp => dp.Deal)
+                .Include(p => p.DealProducts)
+                .ThenInclude(dp => dp.Deal)
                 .ToListAsync();
 
             return result;
@@ -39,6 +39,7 @@ namespace CRM_DAL.Repositories
         {
             await _context.Products.AddAsync(item);
         }
+
         public async Task Update(Product item)
         {
             _context.Products.Update(item);

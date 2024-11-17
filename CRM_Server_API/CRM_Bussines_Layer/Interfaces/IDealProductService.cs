@@ -1,5 +1,4 @@
-﻿
-using CRM_Business_Layer.DTO;
+﻿using CRM_Business_Layer.DTO;
 
 namespace CRM_Business_Layer.Interfaces
 {

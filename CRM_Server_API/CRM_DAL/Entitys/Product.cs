@@ -23,7 +23,7 @@ namespace CRM_DAL.Entitys
         [MaxLength(50)]
         public string? AvailabilityStatus { get; set; } // например, "В наличии", "Под заказ", "Нет в наличии" 
 
-        public byte[]? PhotoBlob { get; set; }
+        public string? PhotoBlob { get; set; }
 
         public int QuantityStock { get; set; } = 0; // Количество продукта на складе
 

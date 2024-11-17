@@ -60,11 +60,11 @@ namespace CRM_Business_Layer.Services
         }
 
 
-        public async Task<ResponseAuthenticate> Register(RegisterModelDTO registerModel)
+        public async Task<MessageResponseAuthenticate> Register(RegisterModelDTO registerModel)
         {
             var userExists = await _userEmployee.FindByNameAsync(registerModel.UserName);
             if (userExists != null)
-                return new ResponseAuthenticate { Status = "Error", Message = "Manager already exists!" };
+                return new MessageResponseAuthenticate { Status = "Error", Message = "Manager already exists!" };
 
             EmployeeRegisterModel user = _mapper.Map<EmployeeRegisterModel>(registerModel);
             //EmployeeRegisterModel user = new()
@@ -79,7 +79,7 @@ namespace CRM_Business_Layer.Services
             //};
             var result = await _userEmployee.CreateAsync(user, registerModel.Password);
             if (!result.Succeeded)
-                return new ResponseAuthenticate { Status = "Error", Message = "Manager creation failed! Please check user details and try again." };
+                return new MessageResponseAuthenticate { Status = "Error", Message = "Manager creation failed! Please check user details and try again." };
 
             // Перевірка, чи існує роль "User"; якщо ні, то створюємо її
             if (!await _roleEmployee.RoleExistsAsync(UserRolesDTO.Manager))
@@ -93,15 +93,15 @@ namespace CRM_Business_Layer.Services
                 await _userEmployee.AddToRoleAsync(user, UserRolesDTO.Manager);
             }
 
-            return new ResponseAuthenticate { Status = "Success", Message = "Manager created successfully!" };
+            return new MessageResponseAuthenticate { Status = "Success", Message = "Manager created successfully!" };
         }
 
 
-        public async Task<ResponseAuthenticate> RegisterAdmin(RegisterModelDTO registerModel)
+        public async Task<MessageResponseAuthenticate> RegisterAdmin(RegisterModelDTO registerModel)
         {
             var userExists = await _userEmployee.FindByNameAsync(registerModel.UserName);
             if (userExists != null)
-                return new ResponseAuthenticate { Status = "Error", Message = "User already exists!" };
+                return new MessageResponseAuthenticate { Status = "Error", Message = "User already exists!" };
 
             EmployeeRegisterModel user = _mapper.Map<EmployeeRegisterModel>(registerModel);
             //EmployeeRegisterModel user = new()
@@ -112,7 +112,7 @@ namespace CRM_Business_Layer.Services
             //};
             var result = await _userEmployee.CreateAsync(user, registerModel.Password);
             if (!result.Succeeded)
-                return new ResponseAuthenticate { Status = "Error", Message = "User creation failed! Please check user details and try again." };
+                return new MessageResponseAuthenticate { Status = "Error", Message = "User creation failed! Please check user details and try again." };
 
             if (!await _roleEmployee.RoleExistsAsync(UserRolesDTO.Admin))
                 await _roleEmployee.CreateAsync(new IdentityRole(UserRolesDTO.Admin));
@@ -128,7 +128,7 @@ namespace CRM_Business_Layer.Services
                 await _userEmployee.AddToRoleAsync(user, UserRolesDTO.Manager);
             }
 
-            return new ResponseAuthenticate { Status = "Success", Message = "User created successfully!" };
+            return new MessageResponseAuthenticate { Status = "Success", Message = "User created successfully!" };
         }
 
         public JwtSecurityToken GetToken(List<Claim> authClaims)

@@ -97,11 +97,11 @@
               "type": "Microsoft.ApiManagement/service/apis",
               "name": "CRMServerAPIapi/CRMServerAPI",
               "properties": {
-                "displayName": "CRMServerAPI",
+                "displayName": "CRM_Server_API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
                 "apiRevision": "1",
                 "description": null,
                 "subscriptionRequired": true,
-                "serviceUrl": null,
+                "serviceUrl": "https://crmserverapi20241116153202.azurewebsites.net",
                 "path": "",
                 "protocols": [
                   "https"

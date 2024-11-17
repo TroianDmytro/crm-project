@@ -57,6 +57,7 @@ namespace CRM_Server_API.Controllers
             return Ok(dealDTO);
         }
 
+        //TODO: Доделать и проверить
         [HttpPost("add_product_to_deal/")]
         public async Task<IActionResult> AddProductToDeal([FromForm] DealProductDTO dealProductDTO)
         {

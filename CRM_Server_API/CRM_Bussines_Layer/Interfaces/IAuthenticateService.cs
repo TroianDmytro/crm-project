@@ -9,9 +9,9 @@ namespace CRM_Business_Layer.Interfaces
     {
         Task<TokenDTO?> Login(LoginModelDTO loginModel);
 
-        Task<ResponseAuthenticate> Register(RegisterModelDTO registerModel);
+        Task<MessageResponseAuthenticate> Register(RegisterModelDTO registerModel);
 
-        Task<ResponseAuthenticate> RegisterAdmin(RegisterModelDTO registerModel);
+        Task<MessageResponseAuthenticate> RegisterAdmin(RegisterModelDTO registerModel);
 
         JwtSecurityToken GetToken(List<Claim> authClaims);
 

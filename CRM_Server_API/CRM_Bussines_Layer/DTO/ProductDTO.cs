@@ -1,5 +1,4 @@
-﻿
-namespace CRM_Business_Layer.DTO
+﻿namespace CRM_Business_Layer.DTO
 {
     public class ProductDTO
     {
@@ -9,8 +8,8 @@ namespace CRM_Business_Layer.DTO
         public string Description { get; set; }
         public string Category { get; set; }
         public string? AvailabilityStatus { get; set; } // например, "В наличии", "Под заказ", "Нет в наличии" 
-        public byte[]? PhotoBlob { get; set; }=null;
-        public int Quantity { get; set; } // Количество продукта в сделке
+        public string? PhotoBlob { get; set; }=null;
+        public int Quantity { get; set; } // Количество продукта на складе
 
     }
 }

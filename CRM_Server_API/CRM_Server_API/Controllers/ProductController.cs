@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using CRM_Business_Layer.DTO;
 using CRM_Business_Layer.Interfaces;
+using CRM_DAL.Entitys;
 using CRM_Server_API.Models.Request;
+using CRM_Server_API.Models.Responce;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CRM_Server_API.Controllers
@@ -25,7 +27,9 @@ namespace CRM_Server_API.Controllers
             IEnumerable<ProductDTO> result = await _productService.GetAllProductsAsync();
             result = result.ToList();
 
-            return Ok(result);
+            List<ProductResponce> productResponce = _mapper.Map<List<ProductResponce>>(result);
+
+            return Ok(productResponce);
         }
 
         [HttpGet("get_by_id")]
@@ -35,7 +39,9 @@ namespace CRM_Server_API.Controllers
             if (product == null)
                 return NotFound("Product with this Id not found");
 
-            return Ok(product);
+            ProductResponce productResponce = _mapper.Map<ProductResponce>(product);
+
+            return Ok(productResponce);
         }
 
 
@@ -49,32 +55,45 @@ namespace CRM_Server_API.Controllers
         }
 
         [HttpPut("UpdateProduct")]
-        public async Task<IActionResult> UpdateProduct(Guid id,[FromBody] UpdateProductDTO updateProductDTO) 
+        public async Task<IActionResult> UpdateProduct(Guid id, [FromBody] ProductRequest productUpdate)
         {
-            var product = await _productService.GetProductByIdAsync(id);
-            if (product == null)
+            bool productIsExists = await _productService.ProductIsExists(id);
+            if (productIsExists)
                 return NotFound("Product with this Id not found");
 
-            product.Name = updateProductDTO.Name;
-            product.Price = updateProductDTO.Price;
-            product.Description = updateProductDTO.Description;
-            product.Category = updateProductDTO.Category;
-            product.AvailabilityStatus = updateProductDTO.AvailabilityStatus;
+            ProductDTO productDTO;
+            if (productUpdate.PhotoBlob != null)
+            {
+                productDTO = _mapper.Map<ProductDTO>(productUpdate);
+            }
+            else
+            {
+                productDTO = await _productService.GetProductByIdAsync(id);
 
-            await _productService.UpdateProductAsync(product);
-            return NoContent(); 
+                productDTO.ProductId = id;
+                productDTO.Name = productUpdate.Name;
+                productDTO.Price = productUpdate.Price;
+                productDTO.Description = productUpdate.Description;
+                productDTO.Category = productUpdate.Category;
+                productDTO.AvailabilityStatus = productUpdate.AvailabilityStatus;
+
+            }
+            productDTO.ProductId = id;
+
+            await _productService.UpdateProductAsync(productDTO);
+            return NoContent();
         }
 
 
         [HttpDelete("DeleteProductId")]
         public async Task<IActionResult> DeleteProduct(Guid id)
         {
-            var product = await _productService.GetProductByIdAsync(id);
-            if (product == null)
+            bool isExists = await _productService.ProductIsExists(id);
+            if (isExists)
                 return NotFound("Product with this Id not found");
 
             await _productService.DeleteProductAsync(id);
-            return NoContent();
+            return Ok();
         }
     }
 }

@@ -12,9 +12,13 @@ using CRM_Business_Layer.Services;
 using CRM_DAL.Repositories;
 using CRM_DAL.Entitys.Auth;
 using System.Text.Json;
+using Azure.Storage.Blobs;
+using CRM_Server_API.Blobs;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
+
+   
 
 // For Entity Framework
 builder.Services.AddDbContext<AzureDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("AzureConnectionStr")));
@@ -62,6 +66,12 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+//For blobs
+builder.Services.AddSingleton(x => new BlobServiceClient(builder.Configuration.GetConnectionString("BlobConnection")));
+builder.Services.AddSingleton<BlobModul>(); // Регистрация BlobModul
+builder.Services.AddScoped<PhotoBlobToBase64Resolver>();
+builder.Services.AddScoped<PhotoBlobUploadResolver>(); // Регистрация Resolver для Upload
 
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 

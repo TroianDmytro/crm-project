@@ -1,13 +1,14 @@
-﻿namespace CRM_Server_API.Models.Request
+﻿namespace CRM_Server_API.Models.Responce
 {
-    public class ProductRequest
+    public class ProductResponce
     {
+        public Guid ProductId { get; set; }
         public string Name { get; set; }
         public decimal Price { get; set; }
         public string Description { get; set; }
         public string Category { get; set; }
         public string? AvailabilityStatus { get; set; } // например, "В наличии", "Под заказ", "Нет в наличии" 
-        public IFormFile? PhotoBlob { get; set; } = null;
+        public string? PhotoBase64 { get; set; } = null;
+        public int Quantity { get; set; } // Количество продукта на складе
     }
 }
-
