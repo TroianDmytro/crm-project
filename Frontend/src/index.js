@@ -9,6 +9,7 @@ import './components/globals.ts';
 
 import LoginPage from './components/pages/LoginPage/LoginPage.tsx';
 import ClientsPage from './components/pages/ClientsPage/ClientsPage.tsx';
+import ManagersPage from './components/pages/ManagersPage/ManagersPage.tsx';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -19,6 +20,7 @@ root.render(
           <Route path="/" element={<></>} />
           <Route path="/Login" element={<LoginPage></LoginPage>} />
           <Route path="/Clients" element={<ClientsPage></ClientsPage>} />
+          <Route path="/Managers" element={<ManagersPage></ManagersPage>} />
         </Routes>
       </App>
     </Router>

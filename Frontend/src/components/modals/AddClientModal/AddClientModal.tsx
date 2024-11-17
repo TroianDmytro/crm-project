@@ -3,7 +3,7 @@ import { Modal, Button, Form, Spinner } from 'react-bootstrap';
 
 import axios from 'axios';
 
-import "./AddClientModal.css";
+import "./../Modal.css";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faXmark, faPlus, faEraser } from '@fortawesome/free-solid-svg-icons'

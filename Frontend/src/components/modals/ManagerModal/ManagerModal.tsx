@@ -13,14 +13,18 @@ import { apiUrl } from '../../config.ts';
 type FormData = {
    name: string;
    lastName: string;
+   patronymic?: string;
+   userName: string;
+   address?: string;
+   dateOfBirth: string;
+   hireDate?: string;
+   position?: string;
+   department?: string;
    email: string;
-   phoneNumber: string;
-   address: string;
-   companyName: string;
-   notes: string;
+   password: string;
 };
 
-const ClientModal = ({ show, handleClose, client, onClientUpdated }) => {
+const ManagerModal = ({ show, handleClose, manager, onManagerUpdated }) => {
    const [loading, setLoading] = useState(false);
 
    const [currentState, setCurrentState] = useState("default");
@@ -29,11 +33,15 @@ const ClientModal = ({ show, handleClose, client, onClientUpdated }) => {
    const [formData, setFormData] = useState<FormData>({
       name: "",
       lastName: "",
-      email: "",
-      phoneNumber: "",
+      patronymic: "",
+      userName: "",
       address: "",
-      companyName: "",
-      notes: ""
+      dateOfBirth: "",
+      hireDate: "",
+      position: "",
+      department: "",
+      email: "",
+      password: "",
    });
 
    useEffect(() => {
@@ -42,18 +50,22 @@ const ClientModal = ({ show, handleClose, client, onClientUpdated }) => {
       }
    }, [show]);
 
-   if (!client) return null;
+   if (!manager) return null;
 
    const handleEdit = () => {
-      setStatus(client.isActive);
+      setStatus(manager.isActive);
       setFormData({
-         name: client.name,
-         lastName: client.lastName,
-         email: client.email,
-         phoneNumber: client.phoneNumber,
-         address: client.address,
-         companyName: client.companyName,
-         notes: client.notes
+         name: manager.name,
+         lastName: manager.lastName,
+         patronymic: manager.patronymic,
+         userName: manager.userName,
+         address: manager.address,
+         dateOfBirth: manager.dateOfBirth,
+         hireDate: manager.hireDate,
+         position: manager.position,
+         department: manager.department,
+         email: manager.email,
+         password: manager.password
       });
       setCurrentState("edit");
    };
@@ -70,26 +82,26 @@ const ClientModal = ({ show, handleClose, client, onClientUpdated }) => {
       setLoading(true);
       if (currentState === "edit") {
          try {
-            await axios.put(`${apiUrl}/client/edit/${client.id}`, {
+            await axios.put(`${apiUrl}/manager/edit/${manager.id}`, {
                ...formData,
                isActive: status,
             });
-            onClientUpdated();
+            onManagerUpdated();
 
             handleClose();
          } catch (error) {
-            console.error("Error updating client:", error);
+            console.error("Error updating manager:", error);
          } finally {
             setLoading(false);
          }
       } else if (currentState === "delete") {
          try {
-            await axios.delete(`${apiUrl}/client/remove/${client.id}`);
-            onClientUpdated();
+            await axios.delete(`${apiUrl}/manager/remove/${manager.id}`);
+            onManagerUpdated();
 
             handleClose();
          } catch (error) {
-            console.error("Error deleting client:", error);
+            console.error("Error deleting manager:", error);
          } finally {
             setLoading(false);
          }
@@ -123,7 +135,7 @@ const ClientModal = ({ show, handleClose, client, onClientUpdated }) => {
                justifyContent: "space-between"
             }}
          >
-            <Modal.Title>Client details</Modal.Title>
+            <Modal.Title>Manager details</Modal.Title>
             <FontAwesomeIcon
                icon={faXmark}
                onClick={handleClose}
@@ -157,23 +169,23 @@ const ClientModal = ({ show, handleClose, client, onClientUpdated }) => {
                      />
                   </Form.Group>
                   <Form.Group className="mb-3 d-flex">
-                     <Form.Label className="me-2">Email:</Form.Label>
+                     <Form.Label className="me-2">Patronymic:</Form.Label>
                      <Form.Control
-                        type="email"
-                        name="email"
-                        value={formData.email}
+                        type="text"
+                        name="patronymic"
+                        value={formData.patronymic}
                         onChange={handleInputChange}
-                        placeholder="Enter email"
+                        placeholder="Enter patronymic"
                      />
                   </Form.Group>
                   <Form.Group className="mb-3 d-flex">
-                     <Form.Label className="me-2">Phone number:</Form.Label>
+                     <Form.Label className="me-2">Username:</Form.Label>
                      <Form.Control
-                        type="tel"
-                        name="phoneNumber"
-                        value={formData.phoneNumber}
+                        type="text"
+                        name="userName"
+                        value={formData.userName}
                         onChange={handleInputChange}
-                        placeholder="Enter phone number"
+                        placeholder="Enter username"
                      />
                   </Form.Group>
                   <Form.Group className="mb-3 d-flex">
@@ -187,54 +199,79 @@ const ClientModal = ({ show, handleClose, client, onClientUpdated }) => {
                      />
                   </Form.Group>
                   <Form.Group className="mb-3 d-flex">
-                     <Form.Label className="me-2">Company name:</Form.Label>
+                     <Form.Label className="me-2">Date of birth:</Form.Label>
                      <Form.Control
                         type="text"
-                        name="companyName"
-                        value={formData.companyName}
+                        name="dateOfBirth"
+                        value={formData.dateOfBirth}
                         onChange={handleInputChange}
-                        placeholder="Enter company name"
+                        placeholder="Enter date of birth"
                      />
                   </Form.Group>
                   <Form.Group className="mb-3 d-flex">
-                     <Form.Label className="me-2">Notes:</Form.Label>
+                     <Form.Label className="me-2">Hire date:</Form.Label>
                      <Form.Control
-                        as="textarea"
-                        rows={3}
-                        name="notes"
-                        value={formData.notes}
+                        type="text"
+                        name="hireDate"
+                        value={formData.hireDate}
                         onChange={handleInputChange}
-                        placeholder="Enter notes"
+                        placeholder="Enter hire date"
                      />
                   </Form.Group>
                   <Form.Group className="mb-3 d-flex">
-                     <Form.Label className="me-2">Status:</Form.Label>
-                     <Button
-                        variant={status ? "success" : "danger"}
-                        onClick={handleStatusChange}
-                     >
-                        {status ? <FontAwesomeIcon icon={faCheck} /> : <FontAwesomeIcon icon={faXmark} />}
-                     </Button>
+                     <Form.Label className="me-2">Position:</Form.Label>
+                     <Form.Control
+                        type="text"
+                        name="position"
+                        value={formData.position}
+                        onChange={handleInputChange}
+                        placeholder="Enter position"
+                     />
+                  </Form.Group>
+                  <Form.Group className="mb-3 d-flex">
+                     <Form.Label className="me-2">Department:</Form.Label>
+                     <Form.Control
+                        type="text"
+                        name="department"
+                        value={formData.department}
+                        onChange={handleInputChange}
+                        placeholder="Enter department"
+                     />
+                  </Form.Group>
+                  <Form.Group className="mb-3 d-flex">
+                     <Form.Label className="me-2">Email:</Form.Label>
+                     <Form.Control
+                        type="text"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        placeholder="Enter email"
+                     />
+                  </Form.Group>
+                  <Form.Group className="mb-3 d-flex">
+                     <Form.Label className="me-2">Password:</Form.Label>
+                     <Form.Control
+                        type="text"
+                        name="password"
+                        value={formData.password}
+                        onChange={handleInputChange}
+                        placeholder="Enter password"
+                     />
                   </Form.Group>
                </Form>
             </Modal.Body>
          ) : (
             <Modal.Body className='Dark'>
-               <h5 style={{ marginBottom: "18px" }}>Name: {client?.name} {client?.lastName}</h5>
-               <p><strong>Email:</strong> {client?.email}</p>
-               <p><strong>Phone:</strong> {client?.phoneNumber}</p>
-               <p><strong>Address:</strong> {client?.address}</p>
-               <p><strong>Company:</strong> {client?.companyName}</p>
-               <p><strong>Notes:</strong> {client?.notes ? client?.notes : <FontAwesomeIcon icon={faXmark} />}</p>
-               <p><strong>Created At:</strong> {new Date(client?.createdAt).toLocaleString()}</p>
-               <p><strong>Updated At:</strong> {client?.updatedAt ? new Date(client?.updatedAt).toLocaleString() : 'N/A'}</p>
-               <p style={{ margin: "0" }}><strong style={{ marginRight: "8px" }}>Status:</strong>
-                  {client.isActive ? (
-                     <FontAwesomeIcon icon={faCheck} />
-                  ) : (
-                     <FontAwesomeIcon icon={faXmark} />
-                  )}
-               </p>
+               <h5 style={{ marginBottom: "18px" }}>Name: {manager?.name} {manager?.lastName}</h5>
+               <p><strong>Patronymic:</strong> {manager?.patronymic}</p>
+               <p><strong>Username:</strong> {manager.userName}</p>
+               <p><strong>Address:</strong> {manager?.address}</p>
+               <p><strong>Date of birth:</strong> {new Date(manager?.dateOfBirth).toLocaleString()}</p>
+               <p><strong>Hire date:</strong> {new Date(manager?.hireDate).toLocaleString()}</p>
+               <p><strong>Position:</strong> {manager?.position}</p>
+               <p><strong>Department:</strong> {manager?.department}</p>
+               <p><strong>Email:</strong> {manager.email}</p>
+               <p><strong>Password:</strong> {manager.password}</p>
             </Modal.Body>
          )}
          <Modal.Footer
@@ -269,4 +306,4 @@ const ClientModal = ({ show, handleClose, client, onClientUpdated }) => {
    );
 };
 
-export default ClientModal;
+export default ManagerModal;
