@@ -71,26 +71,20 @@ const ClientModal = ({ show, handleClose, client, onClientUpdated }) => {
                ...formData,
                isActive: status,
             });
-            alert("Client updated successfully!");
-
             onClientUpdated();
 
             handleClose();
          } catch (error) {
             console.error("Error updating client:", error);
-            alert("Failed to update client.");
          }
       } else if (currentState === "delete") {
          try {
             await axios.delete(`${apiUrl}/client/remove/${client.id}`);
-            alert("Client deleted successfully!");
-
             onClientUpdated();
 
             handleClose();
          } catch (error) {
             console.error("Error deleting client:", error);
-            alert("Failed to delete client.");
          }
       }
    };
