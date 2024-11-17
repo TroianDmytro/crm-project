@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Button, Form } from 'react-bootstrap';
+import { Modal, Button, Form, Spinner } from 'react-bootstrap';
 
 import axios from 'axios';
 
@@ -21,6 +21,8 @@ type FormData = {
 };
 
 const ClientModal = ({ show, handleClose, client, onClientUpdated }) => {
+   const [loading, setLoading] = useState(false);
+
    const [currentState, setCurrentState] = useState("default");
    const [status, setStatus] = useState(Boolean);
 
@@ -65,6 +67,7 @@ const ClientModal = ({ show, handleClose, client, onClientUpdated }) => {
    };
 
    const handleConfirm = async () => {
+      setLoading(true);
       if (currentState === "edit") {
          try {
             await axios.put(`${apiUrl}/client/edit/${client.id}`, {
@@ -76,6 +79,8 @@ const ClientModal = ({ show, handleClose, client, onClientUpdated }) => {
             handleClose();
          } catch (error) {
             console.error("Error updating client:", error);
+         } finally {
+            setLoading(false);
          }
       } else if (currentState === "delete") {
          try {
@@ -85,6 +90,8 @@ const ClientModal = ({ show, handleClose, client, onClientUpdated }) => {
             handleClose();
          } catch (error) {
             console.error("Error deleting client:", error);
+         } finally {
+            setLoading(false);
          }
       }
    };
@@ -245,8 +252,16 @@ const ClientModal = ({ show, handleClose, client, onClientUpdated }) => {
                </div>
             ) : (
                <div>
-                  <Button variant={currentState === "delete" ? "danger" : "success"} style={{ marginRight: "8px" }} onClick={handleConfirm}><FontAwesomeIcon icon={faCheck} /> Confirm</Button>
-                  <Button variant="dark" onClick={handleCancel}><FontAwesomeIcon icon={faXmark} /></Button>
+                  <Button
+                     variant={currentState === "delete" ? "danger" : "success"}
+                     style={{ marginRight: "8px" }}
+                     onClick={handleConfirm}
+                  >
+                     {loading ? <Spinner animation="border" /> : <><FontAwesomeIcon icon={faCheck} /> Confirm</>}
+                  </Button>
+                  <Button variant="dark" onClick={handleCancel}>
+                     <FontAwesomeIcon icon={faXmark} />
+                  </Button>
                </div>
             )}
          </Modal.Footer>

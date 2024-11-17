@@ -11,7 +11,7 @@ import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faXmark, faArrowsRotate, faPlus } from '@fortawesome/free-solid-svg-icons'
 
-import { Table, Button } from 'react-bootstrap';
+import { Table, Button, Spinner } from 'react-bootstrap';
 
 import ClientModal from '../../modals/ClientModal/ClientModal.tsx';
 import AddClientModal from '../../modals/AddClientModal/AddClientModal.tsx';
@@ -37,14 +37,24 @@ type Client = {
 const ClientsPage: FC<ClientsPageProps> = () => {
    const [clients, setClients] = useState<Client[]>([]);
 
+   const [loading, setLoading] = useState(false);
+
    const [selectedClient, setSelectedClient] = useState(null);
    const [showEditModal, setShowEditModal] = useState(false);
    const [showAddModal, setShowAddModal] = useState(false);
 
    const fetchClients = async () => {
-      const response = await axios.get<Client[]>(`${apiUrl}/client`);
+      setLoading(true);
 
-      setClients(response.data);
+      try {
+         const response = await axios.get<Client[]>(`${apiUrl}/client`);
+
+         setClients(response.data);
+      } catch (error) {
+         console.error('Error fetching clients:', error);
+      } finally {
+         setLoading(false);
+      }
    };
 
    useEffect(() => {
@@ -83,51 +93,57 @@ const ClientsPage: FC<ClientsPageProps> = () => {
                   <Button variant="dark" onClick={fetchClients}><FontAwesomeIcon icon={faArrowsRotate} /></Button>
                </ButtonsContainer>
             </ClientsHeaderContainer>
-            <Table
-               bordered hover responsive
-               variant="dark"
-               style={{
-                  borderColor: 'rgb(23, 25, 27)',
-                  width: "1120px"
-               }}
-            >
-               <thead>
-                  <tr>
-                     <th>Name</th>
-                     <th>Last Name</th>
-                     <th>Email</th>
-                     <th>Phone Number</th>
-                     <th>Address</th>
-                     <th>Created At</th>
-                     <th style={{ textAlign: "center" }}>Status</th>
-                  </tr>
-               </thead>
-               <tbody>
-                  {clients.map((client) => (
-                     <tr
-                        key={client.id}
-                        onClick={() => handleRowClick(client)}
-                        style={{
-                           cursor: 'pointer',
-                        }}
-                     >
-                        <td>{client.name}</td>
-                        <td>{client.lastName}</td>
-                        <td>{client.email}</td>
-                        <td>{client.phoneNumber}</td>
-                        <td>{client.address}</td>
-                        <td>{new Date(client.createdAt).toLocaleString()}</td>
-                        <td style={{ textAlign: "center" }}>
-                           {client.isActive ? (
-                              <FontAwesomeIcon icon={faCheck} />
-                           ) : (
-                              <FontAwesomeIcon icon={faXmark} />
-                           )}
-                        </td>
+            {loading ? (
+               <div className="d-flex justify-content-center align-items-center" style={{ height: "400px" }}>
+                  <Spinner animation="border" style={{ color: "white" }} />
+               </div>
+            ) : (
+               <Table
+                  bordered hover responsive
+                  variant="dark"
+                  style={{
+                     borderColor: 'rgb(23, 25, 27)',
+                     width: "1120px"
+                  }}
+               >
+                  <thead>
+                     <tr>
+                        <th>Name</th>
+                        <th>Last Name</th>
+                        <th>Email</th>
+                        <th>Phone Number</th>
+                        <th>Address</th>
+                        <th>Created At</th>
+                        <th style={{ textAlign: "center" }}>Status</th>
                      </tr>
-                  ))}
-               </tbody>
-            </Table>
+                  </thead>
+                  <tbody>
+                     {clients.map((client) => (
+                        <tr
+                           key={client.id}
+                           onClick={() => handleRowClick(client)}
+                           style={{
+                              cursor: 'pointer',
+                           }}
+                        >
+                           <td>{client.name}</td>
+                           <td>{client.lastName}</td>
+                           <td>{client.email}</td>
+                           <td>{client.phoneNumber}</td>
+                           <td>{client.address}</td>
+                           <td>{new Date(client.createdAt).toLocaleString()}</td>
+                           <td style={{ textAlign: "center" }}>
+                              {client.isActive ? (
+                                 <FontAwesomeIcon icon={faCheck} />
+                              ) : (
+                                 <FontAwesomeIcon icon={faXmark} />
+                              )}
+                           </td>
+                        </tr>
+                     ))}
+                  </tbody>
+               </Table>
+            )}
             <ClientModal
                show={showEditModal}
                handleClose={handleCloseEditModal}

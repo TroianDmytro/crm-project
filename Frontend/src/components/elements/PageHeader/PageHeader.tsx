@@ -1,13 +1,12 @@
 import React, { FC, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
 import {
    PageHeaderWrapper,
    HeaderContainer
 } from './PageHeader.styled.ts';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faRightToBracket, faUserTag, faHandshakeSimple, faServer, faUserShield, faUserPen } from '@fortawesome/free-solid-svg-icons'
+import { faRightToBracket, faUserTag, faHandshakeSimple, faServer, faUserShield, faUserPen, faDolly } from '@fortawesome/free-solid-svg-icons'
 
 import { Container, Navbar, Nav } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -46,7 +45,10 @@ const PageHeader: FC<PageHeaderProps> = () => {
                         </>
                      )}
                      {(loggedInAs === "boss" || loggedInAs === "admin") && (
-                        <Nav.Link as={Link} to="/Managers"><FontAwesomeIcon icon={faUserPen} /> Managers</Nav.Link>
+                        <>
+                           <Nav.Link as={Link} to="/Products"><FontAwesomeIcon icon={faDolly} /> Products</Nav.Link>
+                           <Nav.Link as={Link} to="/Managers"><FontAwesomeIcon icon={faUserPen} /> Managers</Nav.Link>
+                        </>
                      )}
                      {loggedInAs === "boss" && (
                         <Nav.Link as={Link} to="/Admins"><FontAwesomeIcon icon={faUserShield} /> Admins</Nav.Link>

@@ -4,9 +4,12 @@ import {
    LoginPageContainer
 } from './LoginPage.styled.ts';
 import './LoginPage.css';
+import axios from 'axios';
 
 import { Form, Button, Container } from "react-bootstrap";
 import 'bootstrap/dist/css/bootstrap.min.css';
+
+import { apiUrl } from '../../config.ts';
 
 interface LoginPageProps { }
 
@@ -14,10 +17,27 @@ const LoginPage: FC<LoginPageProps> = () => {
    const [username, setUsername] = useState("");
    const [password, setPassword] = useState("");
 
-   const handleSubmit = (e: React.FormEvent) => {
+   const handleSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
+   
+      try {
+         const response = await axios.post(`${apiUrl}/auth/login/`, {
+            UserName: username,
+            Password: password
+         });
+   
+         const token = response.data.token;
+   
+         console.log(token);
+         if (token) {
+            localStorage.setItem('authToken', token);
+         }
 
-      // TODO api запрос для входу в акк + запис значень у змінні window.loggedIn та window.nickname
+         //TODO запис імені та ролей у глобальні змінні (коли бек буде)
+      } catch (error) {
+         console.error("Error during login:", error);
+         alert("Login failed. Please try again.");
+      }
    };
 
    return (

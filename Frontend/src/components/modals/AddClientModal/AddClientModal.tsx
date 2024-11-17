@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Button, Form } from 'react-bootstrap';
+import { Modal, Button, Form, Spinner } from 'react-bootstrap';
 
 import axios from 'axios';
 
@@ -22,6 +22,8 @@ type FormData = {
 };
 
 const AddClientModal = ({ show, handleClose, onClientUpdated }) => {
+   const [loading, setLoading] = useState(false);
+
    const [status, setStatus] = useState(false);
    const [formData, setFormData] = useState<FormData>({
       name: "",
@@ -65,6 +67,8 @@ const AddClientModal = ({ show, handleClose, onClientUpdated }) => {
    };
 
    const handleConfirm = async () => {
+      setLoading(true);
+
       try {
          const response = await axios.post(`${apiUrl}/client/add/`, formData);
          console.log("Client added successfully:", response.data);
@@ -77,7 +81,8 @@ const AddClientModal = ({ show, handleClose, onClientUpdated }) => {
          handleClose();
       } catch (error) {
          console.error("Error adding client:", error);
-         alert("Failed to add client.");
+      } finally {
+         setLoading(false);
       }
    };
 
@@ -209,7 +214,13 @@ const AddClientModal = ({ show, handleClose, onClientUpdated }) => {
                borderTop: "2px rgb(23, 25, 27) solid"
             }}
          >
-            <Button variant="success" style={{ marginRight: "8px" }} onClick={handleConfirm}><FontAwesomeIcon icon={faPlus} /> Add</Button>
+            <Button
+               variant="success"
+               style={{ marginRight: "8px" }}
+               onClick={handleConfirm}
+            >
+               {loading ? <Spinner animation="border" style={{ width: '18px', height: '18px' }} /> : <><FontAwesomeIcon icon={faPlus} /> Add</>}
+            </Button>
             <Button variant="dark" onClick={handleClear}><FontAwesomeIcon icon={faEraser} /></Button>
          </Modal.Footer>
       </Modal>
