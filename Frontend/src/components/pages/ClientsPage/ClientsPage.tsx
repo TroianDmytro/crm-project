@@ -1,16 +1,20 @@
 import React, { FC, useState, useEffect } from 'react';
 import {
    ClientsPageWrapper,
-   ClientsPageContainer
+   ClientsPageContainer,
+   ButtonsContainer,
+   ClientsHeaderContainer,
+   ClientsHeader
 } from './ClientsPage.styled.ts';
 import axios from 'axios';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheck, faXmark } from '@fortawesome/free-solid-svg-icons'
+import { faCheck, faXmark, faArrowsRotate, faPlus } from '@fortawesome/free-solid-svg-icons'
 
-import { Table } from 'react-bootstrap';
+import { Table, Button } from 'react-bootstrap';
 
 import ClientModal from '../../modals/ClientModal/ClientModal.tsx';
+import AddClientModal from '../../modals/AddClientModal/AddClientModal.tsx';
 
 import { apiUrl } from '../../config.ts';
 
@@ -34,31 +38,51 @@ const ClientsPage: FC<ClientsPageProps> = () => {
    const [clients, setClients] = useState<Client[]>([]);
 
    const [selectedClient, setSelectedClient] = useState(null);
-   const [showModal, setShowModal] = useState(false);
+   const [showEditModal, setShowEditModal] = useState(false);
+   const [showAddModal, setShowAddModal] = useState(false);
+
+   const fetchClients = async () => {
+      const response = await axios.get<Client[]>(`${apiUrl}/client`);
+
+      setClients(response.data);
+   };
 
    useEffect(() => {
-      const fetchClients = async () => {
-         const response = await axios.get<Client[]>(`${apiUrl}/client`);
-
-         setClients(response.data);
-      };
-
       fetchClients();
    }, []);
 
-   const handleRowClick = (client) => {
-      setSelectedClient(client);
-      setShowModal(true);
+   const updateClientList = () => {
+      fetchClients();
    };
 
-   const handleCloseModal = () => {
+   const handleRowClick = (client) => {
+      setSelectedClient(client);
+      setShowEditModal(true);
+   };
+
+   const handleCloseEditModal = () => {
       setSelectedClient(null);
-      setShowModal(false);
+      setShowEditModal(false);
+   };
+
+   const handleCloseAddModal = () => {
+      setShowAddModal(false);
+   };
+
+   const handleAddModal = () => {
+      setShowAddModal(true);
    };
 
    return (
       <ClientsPageWrapper>
          <ClientsPageContainer>
+            <ClientsHeaderContainer>
+               <ClientsHeader>Clients management</ClientsHeader>
+               <ButtonsContainer>
+                  <Button variant="success" onClick={handleAddModal} style={{ marginRight: "12px" }}><FontAwesomeIcon icon={faPlus} /></Button>
+                  <Button variant="dark" onClick={fetchClients}><FontAwesomeIcon icon={faArrowsRotate} /></Button>
+               </ButtonsContainer>
+            </ClientsHeaderContainer>
             <Table
                bordered hover responsive
                variant="dark"
@@ -105,9 +129,15 @@ const ClientsPage: FC<ClientsPageProps> = () => {
                </tbody>
             </Table>
             <ClientModal
-               show={showModal}
-               handleClose={handleCloseModal}
+               show={showEditModal}
+               handleClose={handleCloseEditModal}
                client={selectedClient}
+               onClientUpdated={updateClientList}
+            />
+            <AddClientModal
+               show={showAddModal}
+               handleClose={handleCloseAddModal}
+               onClientUpdated={updateClientList}
             />
          </ClientsPageContainer>
       </ClientsPageWrapper >
