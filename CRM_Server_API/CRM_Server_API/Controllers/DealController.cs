@@ -57,7 +57,6 @@ namespace CRM_Server_API.Controllers
             return Ok(dealDTO);
         }
 
-        //TODO: Доделать и проверить
         [HttpPost("add_product_to_deal/")]
         public async Task<IActionResult> AddProductToDeal([FromForm] DealProductDTO dealProductDTO)
         {
@@ -76,7 +75,7 @@ namespace CRM_Server_API.Controllers
         public async Task<IActionResult> UpdateDeal(Guid id, [FromBody] DealUpdate dealUpdate)
         {
             bool deal = await _dealService.DealIsExists(id);
-            if (deal)
+            if (!deal)
                 return NotFound("Deal with this Id not found");
 
             await _dealService.UpdateDealAsync(id,dealUpdate);
@@ -89,11 +88,11 @@ namespace CRM_Server_API.Controllers
         public async Task<IActionResult> DeleteDeal(Guid id)
         {
             var deal = await _dealService.DealIsExists(id);
-            if (deal)
+            if (!deal)
                 return NotFound("Deal with this Id not found");
 
             await _dealService.DeleteDealAsync(id);
-            return NoContent();
+            return Ok();
         }
     }
 }

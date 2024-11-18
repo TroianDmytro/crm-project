@@ -13,15 +13,11 @@ namespace CRM_Server_API.Mapping
     {
         public AutoMapperProfile()
         {
-            CreateMap<Client, ClientDTO>().ReverseMap();
-
             CreateMap<ClientRequest, ClientDTO>();
-
-            CreateMap<Deal, DealDTO>().ReverseMap();
 
             CreateMap<Client, ClientDTO>()
                 .ForMember(
-                    dest => dest.DealDTOs,
+                    dest => dest.DealDTOs, 
                     opt => opt.MapFrom(src => src.Deals)
                 )
                 .ReverseMap()
@@ -30,16 +26,19 @@ namespace CRM_Server_API.Mapping
                     opt => opt.MapFrom(src => src.DealDTOs)
                 );
 
+            // Мапинг Deal -> DealDTO
+            CreateMap<Deal, DealDTO>()
+                .ForMember(
+                dest => dest.ProductDTOs, 
+                opt => opt.MapFrom(src => src.DealProducts.Select(dp => dp.Product))) // Мапинг связанных продуктов
+                .ReverseMap();
+
             CreateMap<DealRequest, DealDTO>();
 
-            CreateMap<DealProduct, DealProductDTO>().ReverseMap();
-
+            CreateMap<DealProduct, DealProductDTO>()
+                .ReverseMap();
+            /////////////////////////////////////////////////////////////////////
             CreateMap<RegisterModelDTO, EmployeeRegisterModel>();
-
-            CreateMap<DealProductDTO, DealProduct>()
-                .ForMember(dest => dest.DealId, opt => opt.MapFrom(src => src.DealId))
-                .ForMember(dest => dest.ProductId, opt => opt.MapFrom(src => src.ProductId))
-                .ForMember(dest => dest.QuantityTransaction, opt => opt.MapFrom(src => src.QuantityTransaction));
 
             CreateMap<DealProduct, DealProductDTO>()
                 .ForMember(dest => dest.DealId, opt => opt.MapFrom(src => src.DealId))

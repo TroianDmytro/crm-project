@@ -28,7 +28,7 @@ namespace CRM_DAL.Entitys
         public Guid ClientId { get; set; }
         public Client Client { get; set; }
 
-        //список сделок
+        //список Products
         public ICollection<DealProduct> DealProducts { get; set; }
     }
 }

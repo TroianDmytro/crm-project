@@ -41,6 +41,7 @@ namespace CRM_Business_Layer.Services
                 {
                     new Claim(ClaimTypes.Name, user.UserName),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id) // Додаємо ID користувача
                 };
 
                 foreach (var userRole in userRoles)
@@ -67,21 +68,12 @@ namespace CRM_Business_Layer.Services
                 return new MessageResponseAuthenticate { Status = "Error", Message = "Manager already exists!" };
 
             EmployeeRegisterModel user = _mapper.Map<EmployeeRegisterModel>(registerModel);
-            //EmployeeRegisterModel user = new()
-            //{
-            //    Name = registerModel.Name,
-            //    LastName = registerModel.LastName,
-
-            //    Email = registerModel.Email,
-            //    SecurityStamp = Guid.NewGuid().ToString(),
-            //    UserName = registerModel.UserName
-
-            //};
+          
             var result = await _userEmployee.CreateAsync(user, registerModel.Password);
             if (!result.Succeeded)
                 return new MessageResponseAuthenticate { Status = "Error", Message = "Manager creation failed! Please check user details and try again." };
 
-            // Перевірка, чи існує роль "User"; якщо ні, то створюємо її
+            //Перевірка, чи існує роль "User"; якщо ні, то створюємо її
             if (!await _roleEmployee.RoleExistsAsync(UserRolesDTO.Manager))
             {
                 await _roleEmployee.CreateAsync(new IdentityRole(UserRolesDTO.Manager));
@@ -92,8 +84,8 @@ namespace CRM_Business_Layer.Services
             {
                 await _userEmployee.AddToRoleAsync(user, UserRolesDTO.Manager);
             }
-
             return new MessageResponseAuthenticate { Status = "Success", Message = "Manager created successfully!" };
+
         }
 
 
@@ -104,15 +96,10 @@ namespace CRM_Business_Layer.Services
                 return new MessageResponseAuthenticate { Status = "Error", Message = "User already exists!" };
 
             EmployeeRegisterModel user = _mapper.Map<EmployeeRegisterModel>(registerModel);
-            //EmployeeRegisterModel user = new()
-            //{
-            //    Email = registerModel.Email,
-            //    SecurityStamp = Guid.NewGuid().ToString(),
-            //    UserName = registerModel.UserName
-            //};
+            
             var result = await _userEmployee.CreateAsync(user, registerModel.Password);
             if (!result.Succeeded)
-                return new MessageResponseAuthenticate { Status = "Error", Message = "User creation failed! Please check user details and try again." };
+                return new MessageResponseAuthenticate { Status = "Error", Message = "Admin creation failed! Please check user details and try again." };
 
             if (!await _roleEmployee.RoleExistsAsync(UserRolesDTO.Admin))
                 await _roleEmployee.CreateAsync(new IdentityRole(UserRolesDTO.Admin));
@@ -128,7 +115,19 @@ namespace CRM_Business_Layer.Services
                 await _userEmployee.AddToRoleAsync(user, UserRolesDTO.Manager);
             }
 
-            return new MessageResponseAuthenticate { Status = "Success", Message = "User created successfully!" };
+            ////для регестрации Boss
+            //if (!await _roleEmployee.RoleExistsAsync(UserRolesDTO.Boss))
+            //{
+            //    await _roleEmployee.CreateAsync(new IdentityRole(UserRolesDTO.Boss));
+            //}
+
+            //// Призначення ролі "Manager" користувачеві, якщо роль існує
+            //if (await _roleEmployee.RoleExistsAsync(UserRolesDTO.Boss))
+            //{
+            //    await _userEmployee.AddToRoleAsync(user, UserRolesDTO.Boss);
+            //}
+
+            return new MessageResponseAuthenticate { Status = "Success", Message = "Admin created successfully!" };
         }
 
         public JwtSecurityToken GetToken(List<Claim> authClaims)

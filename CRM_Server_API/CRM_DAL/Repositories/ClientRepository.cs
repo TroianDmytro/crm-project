@@ -17,6 +17,8 @@ namespace CRM_DAL.Repositories
         {
             var result = await _context.Clients
                                         .Include(c=>c.Deals)
+                                        .ThenInclude(d=>d.DealProducts)
+                                        .ThenInclude(dp => dp.Product)
                                         .FirstOrDefaultAsync(c => c.Id == id); 
             return result;
         }
@@ -25,6 +27,8 @@ namespace CRM_DAL.Repositories
         {
             var result = await _context.Clients
                                         .Include(c => c.Deals)
+                                        .ThenInclude(d => d.DealProducts)
+                                        .ThenInclude(dp=>dp.Product)
                                         .ToListAsync();
             return result;
         }

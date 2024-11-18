@@ -1,5 +1,4 @@
 ﻿using CRM_Business_Layer.Infrastructure;
-using CRM_DAL.Entitys;
 
 namespace CRM_Business_Layer.DTO
 {
@@ -13,6 +12,6 @@ namespace CRM_Business_Layer.DTO
         public DateTime CreatedAt { get; set; } = TimeUA.CurrentTimeAsync().Result;
         public Guid ClientId { get; set; }// Связь с клиентом
         public ClientDTO Client { get; set; }
-        public ICollection<Product> Products { get; set; } = [];//список сделок
+        public ICollection<ProductDTO> ProductDTOs { get; set; } = [];//список продуктов
     }
 }
