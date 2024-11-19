@@ -13,7 +13,7 @@ namespace CRM_DAL.Repositories
             _context = context;
         }
 
-        public async Task<Client?> Get(Guid id)
+        public async Task<Client?> GetAsync(Guid id)
         {
             var result = await _context.Clients
                                         .Include(c=>c.Deals)
@@ -23,7 +23,7 @@ namespace CRM_DAL.Repositories
             return result;
         }
 
-        public async Task<IEnumerable<Client>> GetAll()
+        public async Task<IEnumerable<Client>> GetAllAsync()
         {
             var result = await _context.Clients
                                         .Include(c => c.Deals)
@@ -33,7 +33,7 @@ namespace CRM_DAL.Repositories
             return result;
         }
 
-        public async Task Create(Client item)
+        public async Task CreateAsync(Client item)
         {
             await _context.Clients.AddAsync(item);
         }
@@ -43,7 +43,7 @@ namespace CRM_DAL.Repositories
             _context.Clients.Update(item);
         }
 
-        public async Task Delete(Guid id)
+        public async Task DeleteAsync(Guid id)
         {
             await _context.Clients.Where(c=>c.Id == id).ExecuteDeleteAsync();
         }

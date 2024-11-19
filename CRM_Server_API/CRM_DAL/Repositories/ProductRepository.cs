@@ -15,7 +15,7 @@ namespace CRM_DAL.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Product>> GetAll()
+        public async Task<IEnumerable<Product>> GetAllAsync()
         {
             var result = await _context.Products
                 .Include(p => p.DealProducts)
@@ -25,7 +25,7 @@ namespace CRM_DAL.Repositories
             return result;
         }
 
-        public async Task<Product?> Get(Guid id)
+        public async Task<Product?> GetAsync(Guid id)
         {
             var result = await _context.Products
                .Include(p => p.DealProducts)
@@ -35,7 +35,7 @@ namespace CRM_DAL.Repositories
             return result;
         }
 
-        public async Task Create(Product item)
+        public async Task CreateAsync(Product item)
         {
             await _context.Products.AddAsync(item);
         }
@@ -43,11 +43,6 @@ namespace CRM_DAL.Repositories
         public async Task Update(Product item)
         {
             _context.Products.Update(item);
-        }
-
-        public async Task Delete(Guid id)
-        {
-            await _context.Products.Where(d => d.ProductId== id).ExecuteDeleteAsync();
         }
 
         public async Task<IEnumerable<Product>> Find(Func<Product, bool> predicate)
@@ -60,6 +55,11 @@ namespace CRM_DAL.Repositories
         {
             var result = await _context.Products.AnyAsync(p=>p.ProductId == id);
             return result;
+        }
+
+        public async Task DeleteAsync(Guid id)
+        {
+            await _context.Products.Where(d => d.ProductId == id).ExecuteDeleteAsync();
         }
     }
 }

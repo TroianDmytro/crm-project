@@ -19,14 +19,14 @@ namespace CRM_Business_Layer.Services
 
         public async Task<IEnumerable<DealDTO>> GetAllDealsAsync()
         {
-            var allDeal = await _context.Deal.GetAll();
+            var allDeal = await _context.Deal.GetAllAsync();
             var result = _mapper.Map<List<DealDTO>>(allDeal);
             return result;
         }
 
         public async Task<DealDTO> GetDealByIdAsync(Guid id)
         {
-            var deal = await _context.Deal.Get(id);
+            var deal = await _context.Deal.GetAsync(id);
             var result = _mapper.Map<DealDTO>(deal);
             return result;
         }
@@ -38,13 +38,13 @@ namespace CRM_Business_Layer.Services
             deal.CreatedAt = await TimeUA.CurrentTimeAsync();
             deal.UpdatedAt = await TimeUA.CurrentTimeAsync();
 
-            await _context.Deal.Create(deal);
+            await _context.Deal.CreateAsync(deal);
             await _context.CommitChangesAsync();
         }
 
         public async Task UpdateDealAsync(Guid id, DealUpdate dealUpdate)
         {
-            var deal = await _context.Deal.Get(id) ?? throw new InvalidOperationException();
+            var deal = await _context.Deal.GetAsync(id) ?? throw new InvalidOperationException();
 
             deal.Title = dealUpdate.Title ?? deal.Title;
             deal.Amount = dealUpdate.Amount ?? deal.Amount;
@@ -57,7 +57,7 @@ namespace CRM_Business_Layer.Services
 
         public async Task DeleteDealAsync(Guid id)
         {
-            await _context.Deal.Delete(id);
+            await _context.Deal.DeleteAsync(id);
             await _context.CommitChangesAsync();
         }
 

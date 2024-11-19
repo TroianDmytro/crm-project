@@ -18,10 +18,9 @@ using CRM_Server_API.Blobs;
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
 
-   
-
 // For Entity Framework
-builder.Services.AddDbContext<AzureDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("AzureConnectionStr")));
+builder.Services
+    .AddDbContext<AzureDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("AzureConnectionStr")));
 
 // For Identity
 builder.Services.AddIdentity<EmployeeRegisterModel, IdentityRole>()
@@ -36,8 +35,6 @@ builder.Services.AddControllers()
 
         options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase; 
     });
-
-
 
 // Adding Authentication
 builder.Services.AddAuthentication(options =>
@@ -61,6 +58,7 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"]))
     };
 });
+
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -82,8 +80,25 @@ builder.Services.AddScoped<IClientService, ClientService>();
 builder.Services.AddScoped<IDealService, DealService>();
 //add product
 builder.Services.AddScoped<IProductService, ProductService>();
-
 builder.Services.AddScoped<IDealProductService, DealProductService>();
+builder.Services.AddScoped<IWarehouseService, WarehousesService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+
+
+//Documentation
+//builder.Services.AddSwaggerGen(options =>
+//{
+//    var xmlFilename = "CRM_Server_API.xml";
+//    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFilename);
+//    options.IncludeXmlComments(xmlPath);
+//});
+//builder.Services.AddSwaggerGen(options =>
+//{
+//    var basePath = AppContext.BaseDirectory;
+
+//    var xmlPath = Path.Combine(basePath, "CRM_Server_API.xml");
+//    options.IncludeXmlComments(xmlPath);
+//});
 
 
 builder.Services.AddCors(options =>
@@ -99,12 +114,6 @@ builder.Services.AddCors(options =>
 
 
 var app = builder.Build();
-
-using (var scope = app.Services.CreateScope())
-{
-    var dbContext = scope.ServiceProvider.GetRequiredService<AzureDbContext>();
-    dbContext.Database.Migrate();
-}
 
 if (app.Environment.IsDevelopment())
 {

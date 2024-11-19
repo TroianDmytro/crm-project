@@ -17,9 +17,6 @@ namespace CRM_DAL.Entitys
         [MaxLength(500)]
         public string Description { get; set; }
 
-        [MaxLength(100)]
-        public string Category { get; set; }
-
         [MaxLength(50)]
         public string? AvailabilityStatus { get; set; } // например, "В наличии", "Под заказ", "Нет в наличии" 
 
@@ -29,5 +26,9 @@ namespace CRM_DAL.Entitys
 
         [Required]
         public ICollection<DealProduct> DealProducts { get; set; } //  Связь с сделками
+
+        public Guid CategoryId { get; set; }  // Связь с категориями
+        public Category Category { get; set; }
+
     }
 }

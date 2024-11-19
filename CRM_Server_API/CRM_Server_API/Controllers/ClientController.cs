@@ -20,6 +20,11 @@ namespace CRM_Server_API.Controllers
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Получаем список всех клиентов
+        /// </summary>
+        /// <returns>Возвращаем код 200 при успшном получении списка клиентов</returns>
+        /// <returns>Возвращает код 500 сервер не смог обработать данные</returns>
         // GET: client/
         [HttpGet]
         public async Task<IActionResult> GetAll()
@@ -28,6 +33,13 @@ namespace CRM_Server_API.Controllers
             return Ok(result.ToList());
         }
 
+        /// <summary>
+        /// Получаем клиента по ID
+        /// </summary>
+        /// <param name="id">Идентификатор клиента/></param>
+        /// <returns>Возвращает данные клиента в формате <see cref="ClientDTO"/></returns>
+        /// <returns>Возвращает код 200 при успешном получении  клиента</returns>
+        /// <returns>Возвращает код 400 если клиент с указанным ID не найден</returns>
         // GET client/5
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
@@ -38,6 +50,13 @@ namespace CRM_Server_API.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Создаем клиента
+        /// </summary>
+        /// <param name="newClient">Клиент в формате <see cref="ClientRequest"/></param>
+        /// <returns>Возвращает созданного клиента в формате <see cref="ClientDTO"/></returns>
+        /// <returns>Возвращает код 200 при успешном создании клиента</returns>
+        /// <returns>Возвращает код 400 если не удалось создать клиента</returns>
         // POST client/add/
         [HttpPost("add/")]
         public async Task<IActionResult> Post([FromBody] ClientRequest newClient)
@@ -51,6 +70,14 @@ namespace CRM_Server_API.Controllers
             return Ok(clientDTO);
         }
 
+        /// <summary>
+        /// Обновляем информацию клиента
+        /// </summary>
+        /// <param name="id">Идентификатор клиента/></param>
+        /// <param name="clientRequest">Данные клиента в формате <see cref="ClientRequest"/></param>
+        /// <returns>Возвращает обновленные данные клиента в формате <see cref="ClientDTO"/></returns>
+        /// <returns>Возвращает код 200 при успешном обновлении клиента</returns>
+        /// <returns>Возвращает код 400 если не удалось обновить клиента</returns>
         // PUT client/edit/5
         [HttpPut("edit/{id}")] // настроить дату обновления
         public async Task<IActionResult> Put(Guid id, [FromBody] ClientRequest clientRequest)
@@ -65,6 +92,12 @@ namespace CRM_Server_API.Controllers
             return Ok(updateClientDTO);
         }
 
+        /// <summary>
+        /// Удалить клиента по идентификатору.
+        /// </summary>
+        /// <param name="id">Идентификатор клиента/></param>
+        /// <returns>Возвращает код 200 при успешном удалении клиента</returns>
+        /// <returns>Возвращает код 400 если не удалось удалить клиента</returns>
         // DELETE  client/remove/5
         [HttpDelete("remove/{id}")]
         public async Task<IActionResult> Delete(Guid id)
