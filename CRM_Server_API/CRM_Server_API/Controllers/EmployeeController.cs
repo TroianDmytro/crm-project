@@ -16,6 +16,12 @@ public class EmployeeController : ControllerBase
         _userManager = userManager;
     }
 
+    /// <summary>
+    /// Получаем авторизированного пользователя
+    /// </summary>
+    /// <returns>Возвращает код 200 при успешном получении авторизированного пользователя</returns>
+    /// <returns>Возвращает код 401 при недействительном Токене</returns>
+    /// <returns>Возвраащет код 404 если пользователь не найден</returns>
     [HttpGet("profile")]
     public async Task<IActionResult> GetUserProfile()
     {

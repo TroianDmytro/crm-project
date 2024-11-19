@@ -59,6 +59,16 @@ namespace CRM_Server_API.Mapping
                 dest => dest.PhotoBase64,
                 opt => opt.MapFrom<PhotoBlobToBase64Resolver>() // Используем резолвер для преобразования
             );
+
+            //мапинг категории
+            CreateMap<Category, CategoryDTO>().ReverseMap();
+
+            CreateMap<Category, CategoryWithProductsDTO>()
+                .ForMember(
+                dest => dest.Products,
+                opt => opt.MapFrom(src => src.Products)) 
+                .ReverseMap();
+
         }
     }
 

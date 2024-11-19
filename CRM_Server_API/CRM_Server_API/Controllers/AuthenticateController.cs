@@ -16,6 +16,12 @@ namespace CRM_Server_API.Controllers
             _authenticate = authenticate;
         }
 
+        /// <summary>
+        /// Авторизация пользователя
+        /// </summary>
+        /// <param name="model">Пользователь для входа в формате <see cref="LoginModelDTO"/></param>
+        /// <returns>Возвращает код 200 и токен при успешной авторизации</returns>
+        /// <returns>Возвращает код 404 если нет такого пользователя или если некорректный логин и пароль</returns>
         [HttpPost]
         [Route("login")]
         public async Task<IActionResult> Login([FromBody] LoginModelDTO model)
@@ -28,6 +34,12 @@ namespace CRM_Server_API.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Регистрация менеджера
+        /// </summary>
+        /// <param name="model">Пользователь для регистрации в формате <see cref="RegisterModelDTO"/></param>
+        /// <returns>Возвращает код 200 при успешной регистрации менеджера</returns>
+        /// <returns>Возвращает код 400 если не удалось зарегестрировать менеджера</returns>
         //[Authorize(Roles = UserRoles.Admin)]
         [HttpPost]
         [Route("register_manager")]
@@ -41,6 +53,12 @@ namespace CRM_Server_API.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Регистрация администратора
+        /// </summary>
+        /// <param name="model">Пользователь для регистрации в формате <see cref="RegisterModelDTO"/>.</param>
+        /// <returns>Возвращает код 200 при успешной регистрации администратора</returns>
+        /// <returns>Возвращает код 400 если не удалось зарегистрировать администратора</returns>
         //[Authorize(Roles = UserRoles.Boss)]
         [HttpPost]
         [Route("register_admin")]
