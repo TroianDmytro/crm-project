@@ -23,6 +23,12 @@ namespace CRM_Server_API.Controllers
         }
 
         [HttpGet]
+        /// <summary>
+        /// Получаем список всех сделок
+        /// </summary>
+        /// <returns>Возвращает код 200 при успешном получении списка сделок</returns>
+        /// <returns>Возвращает код 500 сервер не смог обработать данные</returns>
+        [HttpGet("deals/")]
         public async Task<IActionResult> GetDealList()
         {
             var dealsList = await _dealService.GetAllDealsAsync();
@@ -31,6 +37,14 @@ namespace CRM_Server_API.Controllers
 
 
         [HttpGet("{id}")]
+        /// <summary>
+        /// Получаем сделку по ID
+        /// </summary>
+        /// <param name="id">Идентификатор сделки.</param>
+        /// <returns> Возвращает сделку в формате <see cref="DealDTO"/></returns>
+        /// <returns>Возвращает код 200 если есть сделка с указанным ID</returns>
+        /// <returns>Возвращает код 404 если сделка с таким ID не найдена</returns>
+        [HttpGet("get_by_id/")]
         public async Task<IActionResult> GetDealId(Guid id)
         {
             var deal = await _dealService.GetDealByIdAsync(id);
@@ -40,6 +54,13 @@ namespace CRM_Server_API.Controllers
             return Ok(deal);
         }
 
+        /// <summary>
+        /// Создаем сделку
+        /// </summary>
+        /// <param name="dealRequest">Данные для создания сделки в формате <see cref="DealRequest"/>.</param>
+        /// <returns>Возвращает сделку в формате <see cref="DealDTO"/></returns>
+        /// <returns>Возвращает код 200 при успешном создании сделки</returns>
+        /// <returns>Возвращает код 404 если клиент с указанным ID не найден</returns>
         [HttpPost("create/")]
         public async Task<IActionResult> AddDeal([FromForm] DealRequest dealRequest)
         {
@@ -57,6 +78,12 @@ namespace CRM_Server_API.Controllers
             return Ok(dealDTO);
         }
 
+        /// <summary>
+        /// Добавляем продукт в сделку
+        /// </summary>
+        /// <param name="dealProductDTO">Данные о продукте для добавления в сделку в формате <see cref="DealProductDTO"/>.</param>
+        /// <returns>Возвращает код 200 и сообщение при успешном добавлении продукта в сделку</returns>
+        /// <returns>Возвращает код 404 если продукт или сделка с указанным ID не найдены</returns>
         [HttpPost("add_product_to_deal/")]
         public async Task<IActionResult> AddProductToDeal([FromForm] DealProductDTO dealProductDTO)
         {
@@ -72,6 +99,15 @@ namespace CRM_Server_API.Controllers
         }
 
         [HttpPut("edit/{id}")]
+        //////////////////////////////expetion ebout name is null
+        /// <summary>
+        /// Обновляем данные сделки по ID
+        /// </summary>
+        /// <param name="id">Идентификатор сделки</param>
+        /// <param name="dealUpdate">Обновленные данные сделки в формате <see cref="DealUpdate"/></param>
+        /// <returns>Возвращает код 200 при успешном изменении сделки</returns>
+        /// <response>Возвращает код 404 если сделка с указанным ID не найдена</response>
+        [HttpPut("edit/")]
         public async Task<IActionResult> UpdateDeal(Guid id, [FromBody] DealUpdate dealUpdate)
         {
             bool deal = await _dealService.DealIsExists(id);
@@ -83,8 +119,31 @@ namespace CRM_Server_API.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Обновляем данные сделки по ID
+        /// </summary>
+        /// <param name="id">Идентификатор сделки</param>
+        /// <param name="dealUpdate">Обновленные данные сделки</param>
+        /// <returns>Возвращает код 200 при успешном изменении сделки или</returns>
+        /// <returns>Возвращает код 404 если сделка с указанным ID не найдена</returns>
+        //[HttpPut("edit/")]
+        //public async Task<IActionResult> UpdateDeal([FromRoute] Guid id, [FromBody] DealUpdate dealUpdate)
+        //{
+        //    if (!await _dealService.DealIsExists(id))
+        //        return NotFound($"Deal with id {id} not found");
 
         [HttpDelete("remove/{id}")]
+        //    await _dealService.UpdateDealAsync(id, dealUpdate);
+        //    return Ok("Deal updated successfully");
+        //}
+        //////////////////////////////////////////////////////////////////////////
+ 
+        /// <summary>
+        /// Удаляем сделку по ID
+        /// </summary>
+        /// <returns>Возвращает код 200 при успешном удалении сделки</returns>
+        /// <returns>Возвращает код 404 если сделка с указанным ID не найдена</returns>
+        [HttpDelete("delete/")]
         public async Task<IActionResult> DeleteDeal(Guid id)
         {
             var deal = await _dealService.DealIsExists(id);

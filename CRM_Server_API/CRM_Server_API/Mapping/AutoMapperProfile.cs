@@ -70,6 +70,15 @@ namespace CRM_Server_API.Mapping
 
             CreateMap<Warehouse, WarehouseDTO>().ReverseMap();
             CreateMap<WarehouseDTO, WarehouseRequest>().ReverseMap();
+            //мапинг категории
+            CreateMap<Category, CategoryDTO>().ReverseMap();
+
+            CreateMap<Category, CategoryWithProductsDTO>()
+                .ForMember(
+                dest => dest.Products,
+                opt => opt.MapFrom(src => src.Products)) 
+                .ReverseMap();
+
         }
     }
 

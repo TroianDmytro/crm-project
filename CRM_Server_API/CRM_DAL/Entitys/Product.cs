@@ -29,5 +29,9 @@ namespace CRM_DAL.Entitys
 
         [Required]
         public ICollection<DealProduct> DealProducts { get; set; } //  Связь с сделками
+
+        public Guid CategoryId { get; set; }  // Связь с категориями
+        public Category CategoryEntity { get; set; }
+
     }
 }

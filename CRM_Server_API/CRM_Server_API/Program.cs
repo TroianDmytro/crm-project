@@ -61,6 +61,8 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"]))
     };
 });
+
+
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -85,6 +87,19 @@ builder.Services.AddScoped<IProductService, ProductService>();
 
 builder.Services.AddScoped<IDealProductService, DealProductService>();
 builder.Services.AddScoped<IWarehouseService, WarehousesService>();
+
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+
+
+//Documentation
+builder.Services.AddSwaggerGen(options =>
+{
+    var xmlFilename = "CRMDocumentation.xml"; 
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFilename);
+    options.IncludeXmlComments(xmlPath);
+});
+
 
 builder.Services.AddCors(options =>
 {

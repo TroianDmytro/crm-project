@@ -20,6 +20,12 @@ namespace CRM_Server_API.Controllers
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Получаем список всех продуктов.
+        /// </summary>
+        /// <returns>Список продуктов в формате <see cref="ProductResponce"/></returns>
+        /// <returns>Возвращает код 200 при успешном получении списка продуктов</returns>
+        /// <returns>Возвращает код 500 сервер не смог обработать данные</returns>
         [HttpGet]
         public async Task<IActionResult> GetAllProducts()
         {
@@ -32,6 +38,14 @@ namespace CRM_Server_API.Controllers
         }
 
         [HttpGet("{id}")]
+        /// <summary>
+        /// Получучаем продукт по ID 
+        /// </summary>
+        /// <param name="id">Идентификатор продукта</param>
+        /// <returns>Продукт в формате <see cref="ProductResponce"/></returns>
+        /// <returns>Возвращает код 200 если есть продукт с таким ID</returns>
+        /// <returns>Возвращает код 404 если продукт с таким ID не найден/returns>
+        [HttpGet("get_by_id")]
         public async Task<IActionResult> GetProductId(Guid id)
         {
             ProductDTO product = await _productService.GetProductByIdAsync(id);
@@ -45,6 +59,14 @@ namespace CRM_Server_API.Controllers
 
 
         [HttpPost("add/")]
+        /// <summary>
+        /// Добавление нового продукта
+        /// </summary>
+        /// <param name="productRequest">Данные продукта для добавления</param>
+        /// <returns>Добавленный продукт в формате <see cref="ProductDTO"/></returns>
+        /// <returns>Возвращает код 200 при успешном добавлении продукта</returns>
+        /// <returns>Возвращает код 400 при неправильной валидации данных</returns>
+        [HttpPost("add")]
         public async Task<IActionResult> AddProduct([FromForm] ProductRequest productRequest)
         {
             ProductDTO productDTO = _mapper.Map<ProductDTO>(productRequest);
@@ -54,6 +76,14 @@ namespace CRM_Server_API.Controllers
         }
 
         [HttpPut("edit/{id}")]
+        /// <summary>
+        /// Обновление существующего продукта по ID
+        /// </summary>
+        /// <param name="id">Идентификатор продукта</param>
+        /// <param name="productUpdate">Данные для обновления продукта</param>
+        /// <returns>Возвращает код 204 при успешном обновлении продукта</returns>
+        /// <returns>Возвращает код 404 если продукт с указанным ID не найден</returns>
+        [HttpPut("UpdateProduct")]
         public async Task<IActionResult> UpdateProduct(Guid id, [FromBody] ProductRequest productUpdate)
         {
             bool productIsExists = await _productService.ProductIsExists(id);
@@ -84,6 +114,13 @@ namespace CRM_Server_API.Controllers
 
 
         [HttpDelete("remove/{id}")]
+        /// <summary>
+        /// Удаление продукта по ID
+        /// </summary>
+        /// <param name="id">Идентификатор продукта.</param>
+        /// <returns>Возвращает код 200 при успешном удалении продукта</returns>
+        /// <returns>Возвращает код 404 если продукт с указанным ID не найден </returns>
+        [HttpDelete("DeleteProductId")]
         public async Task<IActionResult> DeleteProduct(Guid id)
         {
             bool isExists = await _productService.ProductIsExists(id);

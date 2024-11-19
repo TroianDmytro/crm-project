@@ -14,6 +14,8 @@ namespace CRM_DAL.EF
         public DbSet<Deal> Deals { get; set; }
         public DbSet<DealProduct> DealProducts { get; set; }
         public DbSet<Warehouse> Warehouses { get; set; }
+        public DbSet<Category> Categories { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -43,8 +45,11 @@ namespace CRM_DAL.EF
                 .HasOne(d => d.Client)          // У одной сделки есть один клиент
                 .WithMany(c => c.Deals)         // У одного клиента может быть много сделок
                 .HasForeignKey(d => d.ClientId); // Внешний ключ в таблице "Deal"
-                
 
+            builder.Entity<Product>()
+                .HasOne(p => p.CategoryEntity)
+                .WithMany(c => c.Products)
+                .HasForeignKey(p => p.CategoryId);
 
 
             base.OnModelCreating(builder);

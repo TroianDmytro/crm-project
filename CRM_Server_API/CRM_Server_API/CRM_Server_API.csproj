@@ -4,6 +4,8 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <DocumentationFile>C:\Users\38067\Documents\GitHub\crm-project\CRM_Server_API\CRM_Server_API\bin\Debug\net8.0\CRMDocumentation.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
