@@ -18,6 +18,7 @@ namespace CRM_Business_Layer.Services
         private readonly RoleManager<IdentityRole> _roleEmployee;
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
+
         public AuthenticateService(
             UserManager<EmployeeRegisterModel> userEmployee,
             RoleManager<IdentityRole> roleEmployee,
@@ -39,9 +40,14 @@ namespace CRM_Business_Layer.Services
 
                 var authClaims = new List<Claim>
                 {
-                    new Claim(ClaimTypes.Name, user.UserName),
+                    //new Claim(ClaimTypes.Name, user.UserName),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                    new Claim(ClaimTypes.NameIdentifier, user.Id) // Додаємо ID користувача
+                    new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+                    /*new Claim(ClaimTypes.NameIdentifier, user.Id), */// Додаємо ID користувача
+                    new Claim(JwtRegisteredClaimNames.Name, user.Name),
+                     new Claim(JwtRegisteredClaimNames.FamilyName, user.LastName)
+
+
                 };
 
                 foreach (var userRole in userRoles)
@@ -63,6 +69,7 @@ namespace CRM_Business_Layer.Services
 
         public async Task<MessageResponseAuthenticate> Register(RegisterModelDTO registerModel)
         {
+            //checking the uniqueness of the login
             var userExists = await _userEmployee.FindByNameAsync(registerModel.UserName);
             if (userExists != null)
                 return new MessageResponseAuthenticate { Status = "Error", Message = "Manager already exists!" };
@@ -84,6 +91,7 @@ namespace CRM_Business_Layer.Services
             {
                 await _userEmployee.AddToRoleAsync(user, UserRolesDTO.Manager);
             }
+
             return new MessageResponseAuthenticate { Status = "Success", Message = "Manager created successfully!" };
 
         }
@@ -93,7 +101,7 @@ namespace CRM_Business_Layer.Services
         {
             var userExists = await _userEmployee.FindByNameAsync(registerModel.UserName);
             if (userExists != null)
-                return new MessageResponseAuthenticate { Status = "Error", Message = "User already exists!" };
+                return new MessageResponseAuthenticate { Status = "Error", Message = "Admin already exists!" };
 
             EmployeeRegisterModel user = _mapper.Map<EmployeeRegisterModel>(registerModel);
             
@@ -137,7 +145,7 @@ namespace CRM_Business_Layer.Services
             var token = new JwtSecurityToken(
                 issuer: _configuration["JWT:ValidIssuer"],
                 audience: _configuration["JWT:ValidAudience"],
-                expires: DateTime.Now.AddHours(3),
+                expires: DateTime.Now.AddHours(5),
                 claims: authClaims,
                 signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
                 );

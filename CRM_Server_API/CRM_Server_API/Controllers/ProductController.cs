@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using CRM_Business_Layer.DTO;
 using CRM_Business_Layer.Interfaces;
-using CRM_DAL.Entitys;
 using CRM_Server_API.Models.Request;
 using CRM_Server_API.Models.Responce;
 using Microsoft.AspNetCore.Mvc;
@@ -32,7 +31,7 @@ namespace CRM_Server_API.Controllers
             return Ok(productResponce);
         }
 
-        [HttpGet("get_by_id")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetProductId(Guid id)
         {
             ProductDTO product = await _productService.GetProductByIdAsync(id);
@@ -45,7 +44,7 @@ namespace CRM_Server_API.Controllers
         }
 
 
-        [HttpPost("add")]
+        [HttpPost("add/")]
         public async Task<IActionResult> AddProduct([FromForm] ProductRequest productRequest)
         {
             ProductDTO productDTO = _mapper.Map<ProductDTO>(productRequest);
@@ -54,7 +53,7 @@ namespace CRM_Server_API.Controllers
             return Ok(productDTO);
         }
 
-        [HttpPut("UpdateProduct")]
+        [HttpPut("edit/{id}")]
         public async Task<IActionResult> UpdateProduct(Guid id, [FromBody] ProductRequest productUpdate)
         {
             bool productIsExists = await _productService.ProductIsExists(id);
@@ -70,7 +69,6 @@ namespace CRM_Server_API.Controllers
             {
                 productDTO = await _productService.GetProductByIdAsync(id);
 
-                productDTO.ProductId = id;
                 productDTO.Name = productUpdate.Name;
                 productDTO.Price = productUpdate.Price;
                 productDTO.Description = productUpdate.Description;
@@ -85,7 +83,7 @@ namespace CRM_Server_API.Controllers
         }
 
 
-        [HttpDelete("DeleteProductId")]
+        [HttpDelete("remove/{id}")]
         public async Task<IActionResult> DeleteProduct(Guid id)
         {
             bool isExists = await _productService.ProductIsExists(id);

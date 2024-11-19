@@ -1,6 +1,5 @@
 using CRM_Business_Layer.DTO.AuthDTO;
 using CRM_Business_Layer.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CRM_Server_API.Controllers

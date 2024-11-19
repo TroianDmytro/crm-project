@@ -22,7 +22,7 @@ namespace CRM_Server_API.Controllers
             _clientService = clientService;
         }
 
-        [HttpGet("deals/")]
+        [HttpGet]
         public async Task<IActionResult> GetDealList()
         {
             var dealsList = await _dealService.GetAllDealsAsync();
@@ -30,7 +30,7 @@ namespace CRM_Server_API.Controllers
         }
 
 
-        [HttpGet("get_by_id/")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetDealId(Guid id)
         {
             var deal = await _dealService.GetDealByIdAsync(id);
@@ -71,7 +71,7 @@ namespace CRM_Server_API.Controllers
             }
         }
 
-        [HttpPut("edit/")]
+        [HttpPut("edit/{id}")]
         public async Task<IActionResult> UpdateDeal(Guid id, [FromBody] DealUpdate dealUpdate)
         {
             bool deal = await _dealService.DealIsExists(id);
@@ -84,7 +84,7 @@ namespace CRM_Server_API.Controllers
         }
 
 
-        [HttpDelete("delete/")]
+        [HttpDelete("remove/{id}")]
         public async Task<IActionResult> DeleteDeal(Guid id)
         {
             var deal = await _dealService.DealIsExists(id);
