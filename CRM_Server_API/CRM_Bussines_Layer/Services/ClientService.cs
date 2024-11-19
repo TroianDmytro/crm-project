@@ -24,14 +24,14 @@ namespace CRM_Business_Layer.Services
 
         public async Task<ClientDTO> GetClientById(Guid id)
         {
-            var client = await _unitOfWork.Client.Get(id);
+            var client = await _unitOfWork.Client.GetAsync(id);
             var clientDTO = _mapper.Map<ClientDTO>(client);
             return clientDTO;
         }
 
         public async Task<IEnumerable<ClientDTO>> GetAllClient()
         {
-            var clients = await _unitOfWork.Client.GetAll();
+            var clients = await _unitOfWork.Client.GetAllAsync();
             var clientsDTO = _mapper.Map<List<ClientDTO>>(clients);
             return clientsDTO;
         }
@@ -43,7 +43,7 @@ namespace CRM_Business_Layer.Services
             client.CreatedAt = await TimeUA.CurrentTimeAsync();
             client.UpdatedAt = await TimeUA.CurrentTimeAsync();
 
-            await _unitOfWork.Client.Create(client);
+            await _unitOfWork.Client.CreateAsync(client);
             await _unitOfWork.CommitChangesAsync();
 
             return newClient;
@@ -63,7 +63,7 @@ namespace CRM_Business_Layer.Services
 
         public async Task DeleteClient(Guid id)
         {
-            await _unitOfWork.Client.Delete(id);
+            await _unitOfWork.Client.DeleteAsync(id);
             await _unitOfWork.CommitChangesAsync();
         }
 

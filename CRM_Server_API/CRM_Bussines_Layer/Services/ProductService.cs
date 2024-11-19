@@ -21,14 +21,14 @@ namespace CRM_Business_Layer.Services
 
         public async Task<IEnumerable<ProductDTO>> GetAllProductsAsync()
         {
-            var result = await _context.Product.GetAll();
+            var result = await _context.Product.GetAllAsync();
             var resultDTO = _mapper.Map<List<ProductDTO>>(result);
             return resultDTO;
         }
 
         public async Task<ProductDTO?> GetProductByIdAsync(Guid id)
         {
-            var result = await _context.Product.Get(id);
+            var result = await _context.Product.GetAsync(id);
             var resultDTO = _mapper.Map<ProductDTO>(result);
             return resultDTO;
         }
@@ -36,7 +36,7 @@ namespace CRM_Business_Layer.Services
         public async Task AddProductAsync(ProductDTO productDTO)
         {
             Product product = _mapper.Map<Product>(productDTO);
-            await _context.Product.Create(product);
+            await _context.Product.CreateAsync(product);
             await _context.CommitChangesAsync();
         }
 
@@ -44,7 +44,7 @@ namespace CRM_Business_Layer.Services
         {
             Product product = _mapper.Map<Product>(productDTO);
 
-            var existingProduct = await _context.Product.Get(product.ProductId);
+            var existingProduct = await _context.Product.GetAsync(product.ProductId);
 
             if (existingProduct != null)
             {
@@ -58,7 +58,7 @@ namespace CRM_Business_Layer.Services
 
         public async Task DeleteProductAsync(Guid id)
         {
-            await _context.Product.Delete(id);
+            await _context.Product.DeleteAsync(id);
             await _context.CommitChangesAsync();
         }
 

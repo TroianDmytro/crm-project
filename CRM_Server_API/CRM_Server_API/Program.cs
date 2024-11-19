@@ -84,7 +84,7 @@ builder.Services.AddScoped<IDealService, DealService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 
 builder.Services.AddScoped<IDealProductService, DealProductService>();
-
+builder.Services.AddScoped<IWarehouseService, WarehousesService>();
 
 builder.Services.AddCors(options =>
 {

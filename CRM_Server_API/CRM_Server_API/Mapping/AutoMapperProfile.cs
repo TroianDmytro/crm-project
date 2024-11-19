@@ -26,6 +26,8 @@ namespace CRM_Server_API.Mapping
                     opt => opt.MapFrom(src => src.DealDTOs)
                 );
 
+            /////////////////////////////////////////////////////////////////////
+           
             // Мапинг Deal -> DealDTO
             CreateMap<Deal, DealDTO>()
                 .ForMember(
@@ -37,13 +39,17 @@ namespace CRM_Server_API.Mapping
 
             CreateMap<DealProduct, DealProductDTO>()
                 .ReverseMap();
+
             /////////////////////////////////////////////////////////////////////
+            
             CreateMap<RegisterModelDTO, EmployeeRegisterModel>();
 
             CreateMap<DealProduct, DealProductDTO>()
                 .ForMember(dest => dest.DealId, opt => opt.MapFrom(src => src.DealId))
                 .ForMember(dest => dest.ProductId, opt => opt.MapFrom(src => src.ProductId))
                 .ForMember(dest => dest.QuantityTransaction, opt => opt.MapFrom(src => src.QuantityTransaction));
+
+            /////////////////////////////////////////////////////////////////////
 
             // Маппинг с резолвером для загрузки файлов
             CreateMap<ProductRequest, ProductDTO>()
@@ -59,6 +65,11 @@ namespace CRM_Server_API.Mapping
                 dest => dest.PhotoBase64,
                 opt => opt.MapFrom<PhotoBlobToBase64Resolver>() // Используем резолвер для преобразования
             );
+
+            /////////////////////////////////////////////////////////////////////
+
+            CreateMap<Warehouse, WarehouseDTO>().ReverseMap();
+            CreateMap<WarehouseDTO, WarehouseRequest>().ReverseMap();
         }
     }
 

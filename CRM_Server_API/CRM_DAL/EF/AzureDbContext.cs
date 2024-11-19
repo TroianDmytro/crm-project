@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using CRM_DAL.Entitys;
 using CRM_DAL.Entitys.Auth;
-using System.Reflection.Emit;
 
 namespace CRM_DAL.EF
 {
@@ -14,6 +13,7 @@ namespace CRM_DAL.EF
         public DbSet<Product> Products { get; set; }
         public DbSet<Deal> Deals { get; set; }
         public DbSet<DealProduct> DealProducts { get; set; }
+        public DbSet<Warehouse> Warehouses { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
