@@ -1,21 +1,21 @@
 ﻿using AutoMapper;
 using CRM_Business_Layer.DTO;
 using CRM_Business_Layer.Interfaces;
-using Microsoft.AspNetCore.Http;
+using CRM_Server_API.Models.Responce;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CRM_Server_API.Controllers
 {
-    [Route("categories/")]
+    [Route("category/")]
     [ApiController]
     public class CategoryController : ControllerBase
     {
-        private readonly ICategoryService _service;
+        private readonly ICategoryService _categoryService;
         private readonly IMapper _mapper;
 
         public CategoryController(ICategoryService service, IMapper mapper)
         {
-            _service = service;
+            _categoryService = service;
             _mapper = mapper;
         }
 
@@ -24,11 +24,14 @@ namespace CRM_Server_API.Controllers
         /// </summary>
         /// <returns>Возвращает код 200 при успешном получении списка категорий</returns>
         /// <returns>Возвращает код 500 сервер не смог обработать данные</returns>
-        [HttpGet("names")]
-        public async Task<IActionResult> GetAllCategoryNames()
+        [HttpGet]
+        public async Task<IActionResult> GetAllCategory()
         {
-            var categories = await _service.GetAllCategoriesAsync();
-            return Ok(categories.Select(c => c.Name));
+            var listCategoty = await _categoryService.GetAllCategoriesAsync();
+
+            List<CategoryResponce> categoryResponce = _mapper.Map<List<CategoryResponce>>(listCategoty);
+
+            return Ok(categoryResponce);
         }
 
         /// <summary>
@@ -36,11 +39,31 @@ namespace CRM_Server_API.Controllers
         /// </summary>
         /// <returns>Возвращает код 200 при успешном получении категорий с продуктами</returns>
         /// <returns>Возвращает код 500 сервер не смог обработать данные</returns>
-        [HttpGet("names_with_products")]
+        [HttpGet("with_products/")]
         public async Task<IActionResult> GetAllCategoriesWithProducts()
         {
-            var categories = await _service.GetAllCategoriesAsync();
-            return Ok(categories);
+            var listCategoty = await _categoryService.GetAllCategoriesAsync();
+            List<CategoryDTO> categoriesDTO = listCategoty.ToList();
+
+            return Ok(categoriesDTO);
+        }
+
+        /// <summary>
+        /// Получаем категорию по Id 
+        /// </summary>
+        /// <param name="id">Идентификатор категории</param>
+        /// <returns>Возвращает код 200 при успешном получении категории по ID </returns>
+        /// <returns>Возвращает код 404 если категория с указанным ID не найдена </returns>
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetCategoryById(Guid id)
+        {
+            var category = await _categoryService.GetCategoryAsync(id);
+            if(category == null)
+                return NotFound("Category with this Id not found");
+
+            CategoryResponce categoryResponce = _mapper.Map<CategoryResponce>(category);
+
+            return Ok(categoryResponce);
         }
 
         /// <summary>
@@ -49,25 +72,32 @@ namespace CRM_Server_API.Controllers
         /// <param name="id">Идентификатор категории</param>
         /// <returns>Возвращает код 200 при успешном получении категории по ID </returns>
         /// <returns>Возвращает код 404 если категория с указанным ID не найдена </returns>
-        [HttpGet("{id}")]
+        [HttpGet("with_products/{id}")]
         public async Task<IActionResult> GetCategoryWithProductsById(Guid id)
         {
-            var category = await _service.GetCategoryWithProductsAsync(id);
+            var category = await _categoryService.GetCategoryAsync(id);
             if (category == null)
                 return NotFound("Category with this Id not found");
+
             return Ok(category);
         }
+
 
         /// <summary>
         /// Добавляем новую категорию
         /// </summary>
-        /// <param name="categoryDto">Категория в формате <see cref="CategoryDTO"/> </param>
+        /// <param name="name">Категория в формате <see cref="CategoryDTO"/> </param>
         /// <returns>Возвращает код 200 при успешном добавлении категории</returns>
         /// <returns>Возвращает код 400 если введены некорректные данные</returns>
-        [HttpPost("addCategory")]
-        public async Task<IActionResult> AddCategory([FromBody] CategoryDTO categoryDto)
+        [HttpPost("add/")]
+        public async Task<IActionResult> AddCategory([FromBody] string name)
         {
-            await _service.AddCategoryAsync(categoryDto);
+            CategoryDTO categoryDTO = new CategoryDTO()
+            {
+                Name = name
+            };
+
+            await _categoryService.AddCategoryAsync(categoryDTO);
             return Ok();
         }
 
@@ -75,15 +105,17 @@ namespace CRM_Server_API.Controllers
         /// Обновляем категорию по ID
         /// </summary>
         /// <param name="id">Идентификатор категории</param>
-        /// <param name="categoryDto">Обновленная категория</param>
+        /// <param name="name">Обновленная категория</param>
         /// <returns>Возвращает код 200 при успешном обновлении категории</returns>
         /// <returns>Возвращает код 404 если категория с указанным Id не найдена</returns>
         /// <returns>Возвращает код 400 если введены некорректные данные</returns>
-        [HttpPut("EditCategory")]
-        public async Task<IActionResult> UpdateCategory(Guid id, [FromBody] CategoryDTO categoryDto)
+        [HttpPut("edit/{id}")]
+        public async Task<IActionResult> UpdateCategory(Guid id, [FromBody] string name)
         {
-            categoryDto.Id = id;
-            await _service.UpdateCategoryAsync(categoryDto);
+            CategoryDTO categoryDTO = await _categoryService.GetCategoryAsync(id);
+            categoryDTO.Name = name;
+            await _categoryService.UpdateCategoryAsync(categoryDTO);
+
             return Ok();
         }
 
@@ -93,10 +125,10 @@ namespace CRM_Server_API.Controllers
         /// <param name="id">Идентификатор категории</param>
         /// <returns>Возвращает код 200 при успешном удалении категории</returns>
         /// <returns>Возвращает код 404 если категория с указанным Id не найдена</returns>
-        [HttpDelete("{id}")]
+        [HttpDelete("remove/{id}")]
         public async Task<IActionResult> DeleteCategory(Guid id)
         {
-            await _service.DeleteCategoryAsync(id);
+            await _categoryService.DeleteCategoryAsync(id);
             return Ok();
         }
     }

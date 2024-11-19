@@ -14,7 +14,7 @@ namespace CRM_DAL.EF
         public DbSet<Deal> Deals { get; set; }
         public DbSet<DealProduct> DealProducts { get; set; }
         public DbSet<Warehouse> Warehouses { get; set; }
-        public DbSet<Category> Categories { get; set; }
+        public DbSet<Category> Categorys { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -47,7 +47,7 @@ namespace CRM_DAL.EF
                 .HasForeignKey(d => d.ClientId); // Внешний ключ в таблице "Deal"
 
             builder.Entity<Product>()
-                .HasOne(p => p.CategoryEntity)
+                .HasOne(p => p.Category)
                 .WithMany(c => c.Products)
                 .HasForeignKey(p => p.CategoryId);
 

@@ -5,7 +5,8 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <DocumentationFile>C:\Users\38067\Documents\GitHub\crm-project\CRM_Server_API\CRM_Server_API\bin\Debug\net8.0\CRMDocumentation.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\net8.0\CRM_Server_API.xml</DocumentationFile>
+    <ProduceReferenceAssembly>True</ProduceReferenceAssembly>
   </PropertyGroup>
 
   <ItemGroup>

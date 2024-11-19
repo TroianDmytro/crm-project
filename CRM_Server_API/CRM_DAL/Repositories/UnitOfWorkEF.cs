@@ -14,13 +14,16 @@ namespace CRM_DAL.Repositories
         private readonly DealRepository _dealRepository;
         private readonly DealProductRepository _dealProductRepository;
         private readonly WarehouseRepository _warehouseRepository;
+        private readonly CategoryRepository _categoryRepository;
 
         public IRepository<Client> Client => _clientRepository;
         public IRepository<Product> Product => _productRepository;
         public IRepository<Deal> Deal => _dealRepository;
         public IRepository<Warehouse> Warehouse => _warehouseRepository;
         public IRepositoryDealProduct DealProduct =>  _dealProductRepository;
+        public IRepository<Category> Category => _categoryRepository;
         public AzureDbContext DbContext => _context;
+
 
         public UnitOfWorkEF(AzureDbContext context)
         {
@@ -30,6 +33,7 @@ namespace CRM_DAL.Repositories
             _productRepository = new ProductRepository(context);
             _dealProductRepository = new DealProductRepository(context);
             _warehouseRepository = new WarehouseRepository(context);
+            _categoryRepository = new CategoryRepository(context);
         }
 
         public void Dispose()

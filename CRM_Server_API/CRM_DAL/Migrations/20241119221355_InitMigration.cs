@@ -59,6 +59,18 @@ namespace CRM_DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Categorys",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Categorys", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Clients",
                 columns: table => new
                 {
@@ -80,21 +92,19 @@ namespace CRM_DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Products",
+                name: "Warehouses",
                 columns: table => new
                 {
-                    ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Price = table.Column<decimal>(type: "decimal(8,2)", precision: 8, scale: 2, nullable: false),
+                    Location = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
-                    Category = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    AvailabilityStatus = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    PhotoBlob = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
-                    QuantityStock = table.Column<int>(type: "int", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Products", x => x.ProductId);
+                    table.PrimaryKey("PK_Warehouses", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -204,6 +214,30 @@ namespace CRM_DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Products",
+                columns: table => new
+                {
+                    ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(8,2)", precision: 8, scale: 2, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    AvailabilityStatus = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    PhotoBlob = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    QuantityStock = table.Column<int>(type: "int", nullable: false),
+                    CategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Products", x => x.ProductId);
+                    table.ForeignKey(
+                        name: "FK_Products_Categorys_CategoryId",
+                        column: x => x.CategoryId,
+                        principalTable: "Categorys",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Deals",
                 columns: table => new
                 {
@@ -300,6 +334,11 @@ namespace CRM_DAL.Migrations
                 name: "IX_Deals_ClientId",
                 table: "Deals",
                 column: "ClientId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Products_CategoryId",
+                table: "Products",
+                column: "CategoryId");
         }
 
         /// <inheritdoc />
@@ -324,6 +363,9 @@ namespace CRM_DAL.Migrations
                 name: "DealProducts");
 
             migrationBuilder.DropTable(
+                name: "Warehouses");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
@@ -337,6 +379,9 @@ namespace CRM_DAL.Migrations
 
             migrationBuilder.DropTable(
                 name: "Clients");
+
+            migrationBuilder.DropTable(
+                name: "Categorys");
         }
     }
 }

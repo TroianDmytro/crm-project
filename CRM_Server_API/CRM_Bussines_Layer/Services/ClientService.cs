@@ -5,7 +5,6 @@ using CRM_Business_Layer.Interfaces;
 using CRM_DAL.EF;
 using CRM_DAL.Entitys;
 using CRM_DAL.Interfaces;
-using Microsoft.EntityFrameworkCore;
 
 namespace CRM_Business_Layer.Services
 {
@@ -13,13 +12,11 @@ namespace CRM_Business_Layer.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private readonly AzureDbContext _context;
 
-        public ClientService(IUnitOfWork unitOfWork, IMapper mapper, AzureDbContext context)
+        public ClientService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
-            _context = context;
         }
 
         public async Task<ClientDTO> GetClientById(Guid id)
@@ -72,7 +69,7 @@ namespace CRM_Business_Layer.Services
 
         public async Task<bool> ClientIsExists(Guid clientId)
         {
-            bool result = await _context.Clients.AnyAsync(c=>c.Id == clientId);
+            bool result = await _unitOfWork.Client.IsExists(clientId);
             return result;
         }
     }

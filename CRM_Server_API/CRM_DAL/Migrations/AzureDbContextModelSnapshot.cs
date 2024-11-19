@@ -130,7 +130,7 @@ namespace CRM_DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categorys");
                 });
 
             modelBuilder.Entity("CRM_DAL.Entitys.Client", b =>
@@ -246,11 +246,6 @@ namespace CRM_DAL.Migrations
                     b.Property<string>("AvailabilityStatus")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("Category")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
 
                     b.Property<Guid>("CategoryId")
                         .HasColumnType("uniqueidentifier");
@@ -479,13 +474,13 @@ namespace CRM_DAL.Migrations
 
             modelBuilder.Entity("CRM_DAL.Entitys.Product", b =>
                 {
-                    b.HasOne("CRM_DAL.Entitys.Category", "CategoryEntity")
+                    b.HasOne("CRM_DAL.Entitys.Category", "Category")
                         .WithMany("Products")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("CategoryEntity");
+                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
