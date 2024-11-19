@@ -6,34 +6,31 @@ import axios from 'axios';
 import "./../Modal.css";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheck, faXmark, faPlus, faEraser } from '@fortawesome/free-solid-svg-icons'
+import { faCheck, faXmark, faPlus, faEraser, faCartFlatbed } from '@fortawesome/free-solid-svg-icons'
 
 import { apiUrl } from '../../config.ts';
 
 type FormData = {
    name: string;
-   lastName: string;
-   email: string;
-   phoneNumber: string;
-   address: string;
-   companyName: string;
-   notes: string;
-   isActive: boolean;
+   price: number;
+   description?: string;
+   category?: string;
+   availabilityStatus?: string;
+   photoBlob?: Uint8Array;
+   quantityStock: number;
 };
 
-const AddClientModal = ({ show, handleClose, onClientUpdated }) => {
+const AddProductModal = ({ show, handleClose, onProductUpdated }) => {
    const [loading, setLoading] = useState(false);
 
-   const [status, setStatus] = useState(false);
+   const [status, setStatus] = useState("Out of stock");
    const [formData, setFormData] = useState<FormData>({
       name: "",
-      lastName: "",
-      email: "",
-      phoneNumber: "",
-      address: "",
-      companyName: "",
-      notes: "",
-      isActive: false
+      price: 0,
+      description: "",
+      category: "",
+      availabilityStatus: "Out of stock",
+      quantityStock: 0
    });
 
    useEffect(() => {
@@ -43,16 +40,14 @@ const AddClientModal = ({ show, handleClose, onClientUpdated }) => {
    }, [show]);
 
    const handleClear = () => {
-      setStatus(false);
+      setStatus("Out of stock");
       setFormData({
          name: "",
-         lastName: "",
-         email: "",
-         phoneNumber: "",
-         address: "",
-         companyName: "",
-         notes: "",
-         isActive: false,
+         price: 0,
+         description: "",
+         category: "",
+         availabilityStatus: "Out of stock",
+         quantityStock: 0
       });
    };
 
@@ -60,24 +55,32 @@ const AddClientModal = ({ show, handleClose, onClientUpdated }) => {
       setLoading(true);
 
       try {
-         const response = await axios.post(`${apiUrl}/client/add/`, formData);
-         console.log("Client added successfully:", response.data);
+         const response = await axios.post(`${apiUrl}/product/add/`, formData);
+         console.log("Product added successfully:", response.data);
 
-         if (onClientUpdated) {
-            onClientUpdated(response.data);
+         if (onProductUpdated) {
+            onProductUpdated(response.data);
          }
 
          handleClear();
          handleClose();
       } catch (error) {
-         console.error("Error adding client:", error);
+         console.error("Error adding product:", error);
       } finally {
          setLoading(false);
       }
    };
 
    const handleStatusChange = () => {
-      setStatus(!status);
+      if (status === "Out of stock") {
+         setStatus("To order");
+      }
+      else if (status === "To order") {
+         setStatus("In stock");
+      }
+      else {
+         setStatus("Out of stock");
+      }
       setFormData((prev) => ({ ...prev, isActive: !status }));
    };
 
@@ -104,7 +107,7 @@ const AddClientModal = ({ show, handleClose, onClientUpdated }) => {
                justifyContent: "space-between"
             }}
          >
-            <Modal.Title>Add client</Modal.Title>
+            <Modal.Title>Add product</Modal.Title>
             <FontAwesomeIcon
                icon={faXmark}
                onClick={handleClose}
@@ -127,74 +130,58 @@ const AddClientModal = ({ show, handleClose, onClientUpdated }) => {
                   />
                </Form.Group>
                <Form.Group className="mb-3 d-flex">
-                  <Form.Label className="me-2">Last name:</Form.Label>
+                  <Form.Label className="me-2">Price:</Form.Label>
                   <Form.Control
                      type="text"
-                     name="lastName"
-                     value={formData.lastName}
+                     name="price"
+                     value={formData.price}
                      onChange={handleInputChange}
-                     placeholder="Enter last name"
+                     placeholder="Enter price"
                   />
                </Form.Group>
                <Form.Group className="mb-3 d-flex">
-                  <Form.Label className="me-2">Email:</Form.Label>
-                  <Form.Control
-                     type="email"
-                     name="email"
-                     value={formData.email}
-                     onChange={handleInputChange}
-                     placeholder="Enter email"
-                  />
-               </Form.Group>
-               <Form.Group className="mb-3 d-flex">
-                  <Form.Label className="me-2">Phone number:</Form.Label>
-                  <Form.Control
-                     type="tel"
-                     name="phoneNumber"
-                     value={formData.phoneNumber}
-                     onChange={handleInputChange}
-                     placeholder="Enter phone number"
-                  />
-               </Form.Group>
-               <Form.Group className="mb-3 d-flex">
-                  <Form.Label className="me-2">Address:</Form.Label>
+                  <Form.Label className="me-2">Description:</Form.Label>
                   <Form.Control
                      type="text"
-                     name="address"
-                     value={formData.address}
+                     name="description"
+                     value={formData.description}
                      onChange={handleInputChange}
-                     placeholder="Enter address"
+                     placeholder="Enter description"
                   />
                </Form.Group>
                <Form.Group className="mb-3 d-flex">
-                  <Form.Label className="me-2">Company name:</Form.Label>
+                  <Form.Label className="me-2">Category:</Form.Label>
                   <Form.Control
                      type="text"
-                     name="companyName"
-                     value={formData.companyName}
+                     name="category"
+                     value={formData.category}
                      onChange={handleInputChange}
-                     placeholder="Enter company name"
-                  />
-               </Form.Group>
-               <Form.Group className="mb-3 d-flex">
-                  <Form.Label className="me-2">Notes:</Form.Label>
-                  <Form.Control
-                     as="textarea"
-                     rows={3}
-                     name="notes"
-                     value={formData.notes}
-                     onChange={handleInputChange}
-                     placeholder="Enter notes"
+                     placeholder="Enter category"
                   />
                </Form.Group>
                <Form.Group className="mb-3 d-flex">
                   <Form.Label className="me-2">Status:</Form.Label>
-                  <Button
-                     variant={status ? "success" : "danger"}
-                     onClick={handleStatusChange}
-                  >
-                     {status ? <FontAwesomeIcon icon={faCheck} /> : <FontAwesomeIcon icon={faXmark} />}
+                  <Button variant={status === "In stock" ? "success" : status === "To order" ? "warning" : "danger"} onClick={handleStatusChange}>
+                     {status === "In stock" ? (
+                        <FontAwesomeIcon style={{ color: "white", marginRight: "4px" }} icon={faCheck} />
+                     ) : status === "To order" ? (
+                        <FontAwesomeIcon style={{ color: "rgb(27, 31, 35)", marginRight: "4px" }} icon={faCartFlatbed} />
+                     ) : (
+                        <FontAwesomeIcon style={{ color: "white", marginRight: "4px" }} icon={faXmark} />
+                     )}
+                     {status}
                   </Button>
+               </Form.Group>
+
+               <Form.Group className="mb-3 d-flex">
+                  <Form.Label className="me-2">Quantity stock:</Form.Label>
+                  <Form.Control
+                     type="text"
+                     name="quantityStock"
+                     value={formData.quantityStock}
+                     onChange={handleInputChange}
+                     placeholder="Enter quantity stock"
+                  />
                </Form.Group>
             </Form>
          </Modal.Body>
@@ -217,4 +204,4 @@ const AddClientModal = ({ show, handleClose, onClientUpdated }) => {
    );
 };
 
-export default AddClientModal;
+export default AddProductModal;

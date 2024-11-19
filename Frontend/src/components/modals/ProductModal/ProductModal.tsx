@@ -6,34 +6,33 @@ import axios from 'axios';
 import "./../Modal.css";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheck, faXmark, faPenToSquare, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { faCheck, faXmark, faPenToSquare, faTrash, faCartFlatbed } from '@fortawesome/free-solid-svg-icons'
 
 import { apiUrl } from '../../config.ts';
 
 type FormData = {
    name: string;
-   lastName: string;
-   email: string;
-   phoneNumber: string;
-   address: string;
-   companyName: string;
-   notes: string;
+   price: number;
+   description?: string;
+   category?: string;
+   availabilityStatus?: string;
+   photoBlob?: Uint8Array;
+   quantityStock: number;
 };
 
-const ClientModal = ({ show, handleClose, client, onClientUpdated }) => {
+const ProductModal = ({ show, handleClose, product, onProductUpdated }) => {
    const [loading, setLoading] = useState(false);
 
    const [currentState, setCurrentState] = useState("default");
-   const [status, setStatus] = useState(Boolean);
+   const [status, setStatus] = useState("Out of stock");
 
    const [formData, setFormData] = useState<FormData>({
       name: "",
-      lastName: "",
-      email: "",
-      phoneNumber: "",
-      address: "",
-      companyName: "",
-      notes: ""
+      price: 0,
+      description: "",
+      category: "",
+      availabilityStatus: "Out of stock",
+      quantityStock: 0
    });
 
    useEffect(() => {
@@ -42,18 +41,17 @@ const ClientModal = ({ show, handleClose, client, onClientUpdated }) => {
       }
    }, [show]);
 
-   if (!client) return null;
+   if (!product) return null;
 
    const handleEdit = () => {
-      setStatus(client.isActive);
+      setStatus(product.availabilityStatus);
       setFormData({
-         name: client.name,
-         lastName: client.lastName,
-         email: client.email,
-         phoneNumber: client.phoneNumber,
-         address: client.address,
-         companyName: client.companyName,
-         notes: client.notes
+         name: product.name,
+         price: product.price,
+         description: product.description,
+         category: product.category,
+         availabilityStatus: product.availabilityStatus,
+         quantityStock: product.quantityStock
       });
       setCurrentState("edit");
    };
@@ -70,26 +68,27 @@ const ClientModal = ({ show, handleClose, client, onClientUpdated }) => {
       setLoading(true);
       if (currentState === "edit") {
          try {
-            await axios.put(`${apiUrl}/client/edit/${client.id}`, {
+            await axios.put(`${apiUrl}/product/edit/${product.id}`, {
                ...formData,
-               isActive: status,
+               photoBlob: formData.photoBlob || null,
+               availabilityStatus: status,
             });
-            onClientUpdated();
+            onProductUpdated();
 
             handleClose();
          } catch (error) {
-            console.error("Error updating client:", error);
+            console.error("Error updating product:", error);
          } finally {
             setLoading(false);
          }
       } else if (currentState === "delete") {
          try {
-            await axios.delete(`${apiUrl}/client/remove/${client.id}`);
-            onClientUpdated();
+            await axios.delete(`${apiUrl}/product/remove/${product.id}`);
+            onProductUpdated();
 
             handleClose();
          } catch (error) {
-            console.error("Error deleting client:", error);
+            console.error("Error deleting product:", error);
          } finally {
             setLoading(false);
          }
@@ -97,7 +96,15 @@ const ClientModal = ({ show, handleClose, client, onClientUpdated }) => {
    };
 
    const handleStatusChange = () => {
-      setStatus(!status);
+      if (status === "Out of stock") {
+         setStatus("To order");
+      }
+      else if (status === "To order") {
+         setStatus("In stock");
+      }
+      else {
+         setStatus("Out of stock");
+      }
    };
 
    const handleInputChange = (e) => {
@@ -123,7 +130,7 @@ const ClientModal = ({ show, handleClose, client, onClientUpdated }) => {
                justifyContent: "space-between"
             }}
          >
-            <Modal.Title>Client details</Modal.Title>
+            <Modal.Title>Product details</Modal.Title>
             <FontAwesomeIcon
                icon={faXmark}
                onClick={handleClose}
@@ -147,94 +154,85 @@ const ClientModal = ({ show, handleClose, client, onClientUpdated }) => {
                      />
                   </Form.Group>
                   <Form.Group className="mb-3 d-flex">
-                     <Form.Label className="me-2">Last name:</Form.Label>
+                     <Form.Label className="me-2">Price:</Form.Label>
                      <Form.Control
                         type="text"
-                        name="lastName"
-                        value={formData.lastName}
+                        name="price"
+                        value={formData.price}
                         onChange={handleInputChange}
-                        placeholder="Enter last name"
+                        placeholder="Enter price"
                      />
                   </Form.Group>
                   <Form.Group className="mb-3 d-flex">
-                     <Form.Label className="me-2">Email:</Form.Label>
-                     <Form.Control
-                        type="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleInputChange}
-                        placeholder="Enter email"
-                     />
-                  </Form.Group>
-                  <Form.Group className="mb-3 d-flex">
-                     <Form.Label className="me-2">Phone number:</Form.Label>
-                     <Form.Control
-                        type="tel"
-                        name="phoneNumber"
-                        value={formData.phoneNumber}
-                        onChange={handleInputChange}
-                        placeholder="Enter phone number"
-                     />
-                  </Form.Group>
-                  <Form.Group className="mb-3 d-flex">
-                     <Form.Label className="me-2">Address:</Form.Label>
+                     <Form.Label className="me-2">Description:</Form.Label>
                      <Form.Control
                         type="text"
-                        name="address"
-                        value={formData.address}
+                        name="description"
+                        value={formData.description}
                         onChange={handleInputChange}
-                        placeholder="Enter address"
+                        placeholder="Enter description"
                      />
                   </Form.Group>
                   <Form.Group className="mb-3 d-flex">
-                     <Form.Label className="me-2">Company name:</Form.Label>
+                     <Form.Label className="me-2">Category:</Form.Label>
                      <Form.Control
                         type="text"
-                        name="companyName"
-                        value={formData.companyName}
+                        name="category"
+                        value={formData.category}
                         onChange={handleInputChange}
-                        placeholder="Enter company name"
-                     />
-                  </Form.Group>
-                  <Form.Group className="mb-3 d-flex">
-                     <Form.Label className="me-2">Notes:</Form.Label>
-                     <Form.Control
-                        as="textarea"
-                        rows={3}
-                        name="notes"
-                        value={formData.notes}
-                        onChange={handleInputChange}
-                        placeholder="Enter notes"
+                        placeholder="Enter category"
                      />
                   </Form.Group>
                   <Form.Group className="mb-3 d-flex">
                      <Form.Label className="me-2">Status:</Form.Label>
-                     <Button
-                        variant={status ? "success" : "danger"}
-                        onClick={handleStatusChange}
-                     >
-                        {status ? <FontAwesomeIcon icon={faCheck} /> : <FontAwesomeIcon icon={faXmark} />}
+                     <Button variant={status === "In stock" ? "success" : status === "To order" ? "warning" : "danger"} onClick={handleStatusChange}>
+                        {status === "In stock" ? (
+                           <FontAwesomeIcon style={{ color: "white", marginRight: "4px" }} icon={faCheck} />
+                        ) : status === "To order" ? (
+                           <FontAwesomeIcon style={{ color: "rgb(27, 31, 35)", marginRight: "4px" }} icon={faCartFlatbed} />
+                        ) : (
+                           <FontAwesomeIcon style={{ color: "white", marginRight: "4px" }} icon={faXmark} />
+                        )}
+                        {status}
                      </Button>
+                  </Form.Group>
+
+                  <Form.Group className="mb-3 d-flex">
+                     <Form.Label className="me-2">Quantity stock:</Form.Label>
+                     <Form.Control
+                        type="text"
+                        name="quantityStock"
+                        value={formData.quantityStock}
+                        onChange={handleInputChange}
+                        placeholder="Enter quantity stock"
+                     />
                   </Form.Group>
                </Form>
             </Modal.Body>
          ) : (
             <Modal.Body className='Dark'>
-               <h5 style={{ marginBottom: "18px" }}>Name: {client?.name} {client?.lastName}</h5>
-               <p><strong>Email:</strong> {client?.email}</p>
-               <p><strong>Phone:</strong> {client?.phoneNumber}</p>
-               <p><strong>Address:</strong> {client?.address}</p>
-               <p><strong>Company:</strong> {client?.companyName}</p>
-               <p><strong>Notes:</strong> {client?.notes ? client?.notes : <FontAwesomeIcon icon={faXmark} />}</p>
-               <p><strong>Created At:</strong> {new Date(client?.createdAt).toLocaleString()}</p>
-               <p><strong>Updated At:</strong> {client?.updatedAt ? new Date(client?.updatedAt).toLocaleString() : 'N/A'}</p>
-               <p style={{ margin: "0" }}><strong style={{ marginRight: "8px" }}>Status:</strong>
-                  {client.isActive ? (
-                     <FontAwesomeIcon icon={faCheck} />
+               <h5 style={{ marginBottom: "18px" }}>Name: {product?.name}</h5>
+               <p><strong>Price:</strong> {product?.price}</p>
+               <p><strong>Description:</strong> {product?.description}</p>
+               <p><strong>Category:</strong> {product?.category}</p>
+               <p><strong style={{ marginRight: "4px" }}>Status:</strong>
+                  {product.availabilityStatus === "In stock" ? (
+                     <FontAwesomeIcon style={{  marginRight: "4px" }} icon={faCheck} />
+                  ) : product.availabilityStatus === "To order" ? (
+                     <FontAwesomeIcon style={{ marginRight: "4px" }} icon={faCartFlatbed} />
                   ) : (
-                     <FontAwesomeIcon icon={faXmark} />
+                     <FontAwesomeIcon style={{ marginRight: "4px" }} icon={faXmark} />
                   )}
+                  {product.availabilityStatus}
                </p>
+               {product.photoBlob ? (
+                  <img
+                     src={`data:image/png;base64,${product.photoBlob}`}
+                     className="rounded-circle"
+                     alt="Product photo"
+                  />
+               ) : ( <></> )}
+               <p><strong>Quantity stock:</strong> {product?.quantityStock}</p>
             </Modal.Body>
          )}
          <Modal.Footer
@@ -269,4 +267,4 @@ const ClientModal = ({ show, handleClose, client, onClientUpdated }) => {
    );
 };
 
-export default ClientModal;
+export default ProductModal;

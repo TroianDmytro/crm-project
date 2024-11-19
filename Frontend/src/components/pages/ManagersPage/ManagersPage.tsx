@@ -25,14 +25,16 @@ type Manager = {
    id: string;
    name: string;
    lastName: string;
-   email: string;
    phoneNumber: string;
-   address: string;
-   companyName: string;
-   notes?: string;
-   createdAt: string;
-   updatedAt: string;
-   isActive: boolean;
+   patronymic?: string;
+   userName: string;
+   address?: string;
+   dateOfBirth: string;
+   hireDate?: string;
+   position?: string;
+   department?: string;
+   email: string;
+   password: string;
 };
 
 const ManagersPage: FC<ManagersPageProps> = () => {
@@ -111,11 +113,11 @@ const ManagersPage: FC<ManagersPageProps> = () => {
                      <tr>
                         <th>Name</th>
                         <th>Last Name</th>
+                        <th>Username</th>
                         <th>Email</th>
                         <th>Phone Number</th>
                         <th>Address</th>
-                        <th>Created At</th>
-                        <th style={{ textAlign: "center" }}>Status</th>
+                        <th>Position</th>
                      </tr>
                   </thead>
                   <tbody>
@@ -129,17 +131,11 @@ const ManagersPage: FC<ManagersPageProps> = () => {
                         >
                            <td>{manager.name}</td>
                            <td>{manager.lastName}</td>
+                           <td>{manager.userName}</td>
                            <td>{manager.email}</td>
                            <td>{manager.phoneNumber}</td>
                            <td>{manager.address}</td>
-                           <td>{new Date(manager.createdAt).toLocaleString()}</td>
-                           <td style={{ textAlign: "center" }}>
-                              {manager.isActive ? (
-                                 <FontAwesomeIcon icon={faCheck} />
-                              ) : (
-                                 <FontAwesomeIcon icon={faXmark} />
-                              )}
-                           </td>
+                           <td>{manager.position}</td>
                         </tr>
                      ))}
                   </tbody>

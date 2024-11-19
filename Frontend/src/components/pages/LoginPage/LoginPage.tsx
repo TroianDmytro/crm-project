@@ -19,21 +19,34 @@ const LoginPage: FC<LoginPageProps> = () => {
 
    const handleSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
-   
+
       try {
          const response = await axios.post(`${apiUrl}/auth/login/`, {
             UserName: username,
             Password: password
          });
-   
+
          const token = response.data.token;
-   
-         console.log(token);
          if (token) {
             localStorage.setItem('authToken', token);
          }
 
-         //TODO запис імені та ролей у глобальні змінні (коли бек буде)
+         const profileResponse = await axios.get(
+            `${apiUrl}/employee/profile/`,
+            {
+               headers: {
+                  Authorization: `Bearer ${token}`,
+               },
+            }
+         );
+
+         console.log(token);
+
+         window.loggedIn = "boss";
+         window.nickname = profileResponse.data.name;
+
+         const loggedInEvent = new CustomEvent("loggedIn");
+         window.dispatchEvent(loggedInEvent);
       } catch (error) {
          console.error("Error during login:", error);
          alert("Login failed. Please try again.");

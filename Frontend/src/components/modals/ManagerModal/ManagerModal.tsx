@@ -13,6 +13,7 @@ import { apiUrl } from '../../config.ts';
 type FormData = {
    name: string;
    lastName: string;
+   phoneNumber: string;
    patronymic?: string;
    userName: string;
    address?: string;
@@ -33,6 +34,7 @@ const ManagerModal = ({ show, handleClose, manager, onManagerUpdated }) => {
    const [formData, setFormData] = useState<FormData>({
       name: "",
       lastName: "",
+      phoneNumber: "",
       patronymic: "",
       userName: "",
       address: "",
@@ -57,6 +59,7 @@ const ManagerModal = ({ show, handleClose, manager, onManagerUpdated }) => {
       setFormData({
          name: manager.name,
          lastName: manager.lastName,
+         phoneNumber: manager.phoneNumber,
          patronymic: manager.patronymic,
          userName: manager.userName,
          address: manager.address,

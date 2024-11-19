@@ -9,7 +9,7 @@ import {
 import axios from 'axios';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheck, faXmark, faArrowsRotate, faPlus } from '@fortawesome/free-solid-svg-icons'
+import { faCheck, faXmark, faArrowsRotate, faPlus, faLock } from '@fortawesome/free-solid-svg-icons'
 
 import { Table, Button, Spinner } from 'react-bootstrap';
 
@@ -36,12 +36,14 @@ type Client = {
 
 const ClientsPage: FC<ClientsPageProps> = () => {
    const [clients, setClients] = useState<Client[]>([]);
+   const [selectedClient, setSelectedClient] = useState(null);
 
    const [loading, setLoading] = useState(false);
 
-   const [selectedClient, setSelectedClient] = useState(null);
    const [showEditModal, setShowEditModal] = useState(false);
    const [showAddModal, setShowAddModal] = useState(false);
+
+   const [hoveredRow, setHoveredRow] = useState<string | null>(null);
 
    const fetchClients = async () => {
       setLoading(true);
@@ -122,17 +124,23 @@ const ClientsPage: FC<ClientsPageProps> = () => {
                         <tr
                            key={client.id}
                            onClick={() => handleRowClick(client)}
+                           onMouseEnter={() => setHoveredRow(client.id)}
+                           onMouseLeave={() => setHoveredRow(null)}
                            style={{
-                              cursor: 'pointer',
+                              cursor: 'pointer'
                            }}
                         >
                            <td>{client.name}</td>
                            <td>{client.lastName}</td>
-                           <td>{client.email}</td>
-                           <td>{client.phoneNumber}</td>
+                           <td style={{width: "280px"}}>
+                              {hoveredRow === client.id ? (client.email) : (<FontAwesomeIcon style={{color: "rgba(255, 255, 255, 0.55)"}} icon={faLock} />)}
+                           </td>
+                           <td style={{width: "150px"}}>
+                              {hoveredRow === client.id ? (client.phoneNumber) : (<FontAwesomeIcon style={{color: "rgba(255, 255, 255, 0.55)"}} icon={faLock} />)}
+                           </td>
                            <td>{client.address}</td>
-                           <td>{new Date(client.createdAt).toLocaleString()}</td>
-                           <td style={{ textAlign: "center" }}>
+                           <td style={{width: "160px"}}>{new Date(client.createdAt).toLocaleString()}</td>
+                           <td style={{ textAlign: 'center' }}>
                               {client.isActive ? (
                                  <FontAwesomeIcon icon={faCheck} />
                               ) : (
