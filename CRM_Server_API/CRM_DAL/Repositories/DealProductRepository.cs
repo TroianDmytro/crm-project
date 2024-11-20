@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CRM_DAL.Repositories
 {
-    public class DealProductRepository: IRepositoryDealProduct
+    public class DealProductRepository : IRepositoryDealProduct
     {
         private readonly AzureDbContext _context;
 
@@ -21,7 +21,7 @@ namespace CRM_DAL.Repositories
 
         public async Task Update(DealProduct item)
         {
-            await Task.Run(()=>_context.DealProducts.Update(item));
+            await Task.Run(() => _context.DealProducts.Update(item));
         }
 
         public async Task Delete(DealProduct item)

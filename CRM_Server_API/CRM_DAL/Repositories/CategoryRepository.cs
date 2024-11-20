@@ -2,15 +2,10 @@
 using CRM_DAL.Entitys;
 using CRM_DAL.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CRM_DAL.Repositories
 {
-    public class CategoryRepository : ICategoryRepository
+    public class CategoryRepository : IRepository<Category>
     {
         private readonly AzureDbContext _context;
 
@@ -19,41 +14,48 @@ namespace CRM_DAL.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Category>> GetAllCategoriesAsync()
+        public async Task<IEnumerable<Category>> GetAllAsync()
         {
-            return await _context.Categories.ToListAsync();
+            var result = await _context.Categorys.Include(c=>c.Products).ToListAsync();
+            return result;
         }
 
-        public async Task<Category> GetCategoryByIdAsync(Guid id)
+        public async Task<Category?> GetByIdAsync(Guid id)
         {
-            return await _context.Categories
-                .Include(c => c.Products)
-                .FirstOrDefaultAsync(c => c.Id == id);
+             var result = await _context.Categorys
+               .Include(c => c.Products)
+               .FirstOrDefaultAsync(c => c.Id == id);
+            return result;
         }
 
-        public async Task<IEnumerable<Category>> GetCategoriesWithProductsAsync()
+       
+        public async Task CreateAsync(Category item)
         {
-            return await _context.Categories.Include(c => c.Products).ToListAsync();
+            await _context.Categorys.AddAsync(item);
+
         }
 
-        public async Task AddCategoryAsync(Category category)
+        public async Task Update(Category item)
         {
-            await _context.Categories.AddAsync(category);
-            await _context.SaveChangesAsync();
+            _context.Categorys.Update(item);
         }
 
-        public async Task UpdateCategoryAsync(Category category)
+        public Task<IEnumerable<Category>> Find(Func<Category, bool> predicate)
         {
-            _context.Categories.Update(category);
-            await _context.SaveChangesAsync();
+            throw new NotImplementedException();
         }
 
-        public async Task DeleteCategoryAsync(Guid id)
+        public Task<bool> IsExists(Guid id)
         {
-            var category = await _context.Categories.FindAsync(id);
+            throw new NotImplementedException();
+        }
+
+        public async Task DeleteAsync(Guid id)
+        {
+            var category = await _context.Categorys.FirstOrDefaultAsync(c=>c.Id==id);
             if (category != null)
             {
-                _context.Categories.Remove(category);
+                _context.Categorys.Remove(category);
                 await _context.SaveChangesAsync();
             }
         }

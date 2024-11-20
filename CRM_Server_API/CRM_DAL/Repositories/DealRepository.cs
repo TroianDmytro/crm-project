@@ -14,7 +14,7 @@ namespace CRM_DAL.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Deal>> GetAll()
+        public async Task<IEnumerable<Deal>> GetAllAsync()
         {
             var result = await _context.Deals
                 .Include(d=>d.Client)
@@ -24,7 +24,7 @@ namespace CRM_DAL.Repositories
             return result;
         }
 
-        public async Task<Deal?> Get(Guid id)
+        public async Task<Deal?> GetByIdAsync(Guid id)
         {
             var result = await _context.Deals
                 .Include(d => d.Client)
@@ -34,7 +34,7 @@ namespace CRM_DAL.Repositories
             return result;
         }
 
-        public async Task Create(Deal item)
+        public async Task CreateAsync(Deal item)
         {
             await _context.Deals.AddAsync(item);
         }
@@ -44,7 +44,7 @@ namespace CRM_DAL.Repositories
             await Task.Run(() => _context.Deals.Update(item));
         }
 
-        public async Task Delete(Guid id)
+        public async Task DeleteAsync(Guid id)
         {
             await _context.Deals.Where(d=>d.DealId==id).ExecuteDeleteAsync();
         }

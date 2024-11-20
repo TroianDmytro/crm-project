@@ -17,21 +17,17 @@ namespace CRM_DAL.Entitys
         [MaxLength(500)]
         public string Description { get; set; }
 
-        [MaxLength(100)]
-        public string Category { get; set; }
-
         [MaxLength(50)]
         public string? AvailabilityStatus { get; set; } // например, "В наличии", "Под заказ", "Нет в наличии" 
 
         public string? PhotoBlob { get; set; }
 
-        public int QuantityStock { get; set; } = 0; // Количество продукта на складе
-
         [Required]
         public ICollection<DealProduct> DealProducts { get; set; } //  Связь с сделками
 
+        public ICollection<WarehouseProduct> WarehouseProducts { get; set; } // связь со складами
         public Guid CategoryId { get; set; }  // Связь с категориями
-        public Category CategoryEntity { get; set; }
+        public Category Category { get; set; }
 
     }
 }

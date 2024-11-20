@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CRM_DAL.Migrations
 {
     [DbContext(typeof(AzureDbContext))]
-    [Migration("20241116131112_InitMigration")]
+    [Migration("20241119221355_InitMigration")]
     partial class InitMigration
     {
         /// <inheritdoc />
@@ -120,6 +120,22 @@ namespace CRM_DAL.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("CRM_DAL.Entitys.Category", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Categorys");
+                });
+
             modelBuilder.Entity("CRM_DAL.Entitys.Client", b =>
                 {
                     b.Property<Guid>("Id")
@@ -224,7 +240,7 @@ namespace CRM_DAL.Migrations
                     b.ToTable("DealProducts");
                 });
 
-            modelBuilder.Entity("CRM_DAL.Entitys.Product", b =>
+            modelBuilder.Entity("CRM_DAL.Entitys.Products", b =>
                 {
                     b.Property<Guid>("ProductId")
                         .ValueGeneratedOnAdd()
@@ -234,10 +250,8 @@ namespace CRM_DAL.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("Category")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -249,8 +263,8 @@ namespace CRM_DAL.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<byte[]>("PhotoBlob")
-                        .HasColumnType("varbinary(max)");
+                    b.Property<string>("PhotoBlob")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("Price")
                         .HasPrecision(8, 2)
@@ -261,7 +275,41 @@ namespace CRM_DAL.Migrations
 
                     b.HasKey("ProductId");
 
+                    b.HasIndex("CategoryId");
+
                     b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("CRM_DAL.Entitys.Warehouse", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Warehouses");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -416,7 +464,7 @@ namespace CRM_DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CRM_DAL.Entitys.Product", "Product")
+                    b.HasOne("CRM_DAL.Entitys.Products", "Products")
                         .WithMany("DealProducts")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -424,7 +472,18 @@ namespace CRM_DAL.Migrations
 
                     b.Navigation("Deal");
 
-                    b.Navigation("Product");
+                    b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("CRM_DAL.Entitys.Products", b =>
+                {
+                    b.HasOne("CRM_DAL.Entitys.Category", "Category")
+                        .WithMany("Products")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -478,6 +537,11 @@ namespace CRM_DAL.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("CRM_DAL.Entitys.Category", b =>
+                {
+                    b.Navigation("Products");
+                });
+
             modelBuilder.Entity("CRM_DAL.Entitys.Client", b =>
                 {
                     b.Navigation("Deals");
@@ -488,7 +552,7 @@ namespace CRM_DAL.Migrations
                     b.Navigation("DealProducts");
                 });
 
-            modelBuilder.Entity("CRM_DAL.Entitys.Product", b =>
+            modelBuilder.Entity("CRM_DAL.Entitys.Products", b =>
                 {
                     b.Navigation("DealProducts");
                 });

@@ -130,7 +130,7 @@ namespace CRM_DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categorys");
                 });
 
             modelBuilder.Entity("CRM_DAL.Entitys.Client", b =>
@@ -237,7 +237,7 @@ namespace CRM_DAL.Migrations
                     b.ToTable("DealProducts");
                 });
 
-            modelBuilder.Entity("CRM_DAL.Entitys.Product", b =>
+            modelBuilder.Entity("CRM_DAL.Entitys.Products", b =>
                 {
                     b.Property<Guid>("ProductId")
                         .ValueGeneratedOnAdd()
@@ -246,11 +246,6 @@ namespace CRM_DAL.Migrations
                     b.Property<string>("AvailabilityStatus")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("Category")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
 
                     b.Property<Guid>("CategoryId")
                         .HasColumnType("uniqueidentifier");
@@ -280,6 +275,38 @@ namespace CRM_DAL.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("CRM_DAL.Entitys.Warehouse", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Warehouses");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -434,7 +461,7 @@ namespace CRM_DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CRM_DAL.Entitys.Product", "Product")
+                    b.HasOne("CRM_DAL.Entitys.Products", "Products")
                         .WithMany("DealProducts")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -442,18 +469,18 @@ namespace CRM_DAL.Migrations
 
                     b.Navigation("Deal");
 
-                    b.Navigation("Product");
+                    b.Navigation("Products");
                 });
 
-            modelBuilder.Entity("CRM_DAL.Entitys.Product", b =>
+            modelBuilder.Entity("CRM_DAL.Entitys.Products", b =>
                 {
-                    b.HasOne("CRM_DAL.Entitys.Category", "CategoryEntity")
+                    b.HasOne("CRM_DAL.Entitys.Category", "Category")
                         .WithMany("Products")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("CategoryEntity");
+                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -522,7 +549,7 @@ namespace CRM_DAL.Migrations
                     b.Navigation("DealProducts");
                 });
 
-            modelBuilder.Entity("CRM_DAL.Entitys.Product", b =>
+            modelBuilder.Entity("CRM_DAL.Entitys.Products", b =>
                 {
                     b.Navigation("DealProducts");
                 });

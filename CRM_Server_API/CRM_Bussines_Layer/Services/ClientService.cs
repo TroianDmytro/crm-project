@@ -5,7 +5,6 @@ using CRM_Business_Layer.Interfaces;
 using CRM_DAL.EF;
 using CRM_DAL.Entitys;
 using CRM_DAL.Interfaces;
-using Microsoft.EntityFrameworkCore;
 
 namespace CRM_Business_Layer.Services
 {
@@ -13,25 +12,23 @@ namespace CRM_Business_Layer.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private readonly AzureDbContext _context;
 
-        public ClientService(IUnitOfWork unitOfWork, IMapper mapper, AzureDbContext context)
+        public ClientService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
-            _context = context;
         }
 
         public async Task<ClientDTO> GetClientById(Guid id)
         {
-            var client = await _unitOfWork.Client.Get(id);
+            var client = await _unitOfWork.Client.GetByIdAsync(id);
             var clientDTO = _mapper.Map<ClientDTO>(client);
             return clientDTO;
         }
 
         public async Task<IEnumerable<ClientDTO>> GetAllClient()
         {
-            var clients = await _unitOfWork.Client.GetAll();
+            var clients = await _unitOfWork.Client.GetAllAsync();
             var clientsDTO = _mapper.Map<List<ClientDTO>>(clients);
             return clientsDTO;
         }
@@ -43,7 +40,7 @@ namespace CRM_Business_Layer.Services
             client.CreatedAt = await TimeUA.CurrentTimeAsync();
             client.UpdatedAt = await TimeUA.CurrentTimeAsync();
 
-            await _unitOfWork.Client.Create(client);
+            await _unitOfWork.Client.CreateAsync(client);
             await _unitOfWork.CommitChangesAsync();
 
             return newClient;
@@ -63,7 +60,7 @@ namespace CRM_Business_Layer.Services
 
         public async Task DeleteClient(Guid id)
         {
-            await _unitOfWork.Client.Delete(id);
+            await _unitOfWork.Client.DeleteAsync(id);
             await _unitOfWork.CommitChangesAsync();
         }
 
@@ -72,7 +69,7 @@ namespace CRM_Business_Layer.Services
 
         public async Task<bool> ClientIsExists(Guid clientId)
         {
-            bool result = await _context.Clients.AnyAsync(c=>c.Id == clientId);
+            bool result = await _unitOfWork.Client.IsExists(clientId);
             return result;
         }
     }
