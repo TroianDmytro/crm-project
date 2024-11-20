@@ -15,7 +15,7 @@ namespace CRM_DAL.EF
         public DbSet<DealProduct> DealProducts { get; set; }
         public DbSet<Warehouse> Warehouses { get; set; }
         public DbSet<Category> Categorys { get; set; }
-
+        public DbSet<WarehouseProduct> WarehouseProducts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -45,6 +45,25 @@ namespace CRM_DAL.EF
                 .HasOne(d => d.Client)          // У одной сделки есть один клиент
                 .WithMany(c => c.Deals)         // У одного клиента может быть много сделок
                 .HasForeignKey(d => d.ClientId); // Внешний ключ в таблице "Deal"
+
+            builder.Entity<Product>()
+                .HasOne(p => p.Category)
+                .WithMany(c => c.Products)
+                .HasForeignKey(p => p.CategoryId);
+
+            ///////////////////////////////////////////////// WarehouseProduct
+            builder.Entity<WarehouseProduct>()
+                .HasOne(wp => wp.Warehouses)
+                .WithMany(wp => wp.WarehouseProducts)
+                .HasForeignKey(wp => wp.WarehouseId)
+                .OnDelete(DeleteBehavior.Cascade); // Настройка каскадного удаления
+
+            builder.Entity<WarehouseProduct>()
+                 .HasOne(wp => wp.Products)
+                .WithMany(wp => wp.WarehouseProducts)
+                .HasForeignKey(wp => wp.ProductId)
+                .OnDelete(DeleteBehavior.Restrict); // Например, запрет на удаление продукта, если он используется
+
 
             builder.Entity<Product>()
                 .HasOne(p => p.Category)

@@ -25,7 +25,7 @@ namespace CRM_Business_Layer.Services
 
         public async Task<CategoryDTO> GetCategoryAsync(Guid id)
         {
-            var category = await _unitOfWork.Category.GetAsync(id);
+            var category = await _unitOfWork.Category.GetByIdAsync(id);
             return _mapper.Map<CategoryDTO>(category);
         }
 

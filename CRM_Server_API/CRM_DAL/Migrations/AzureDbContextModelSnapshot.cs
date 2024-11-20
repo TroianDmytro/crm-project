@@ -237,7 +237,7 @@ namespace CRM_DAL.Migrations
                     b.ToTable("DealProducts");
                 });
 
-            modelBuilder.Entity("CRM_DAL.Entitys.Product", b =>
+            modelBuilder.Entity("CRM_DAL.Entitys.Products", b =>
                 {
                     b.Property<Guid>("ProductId")
                         .ValueGeneratedOnAdd()
@@ -461,7 +461,7 @@ namespace CRM_DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CRM_DAL.Entitys.Product", "Product")
+                    b.HasOne("CRM_DAL.Entitys.Products", "Products")
                         .WithMany("DealProducts")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -469,7 +469,18 @@ namespace CRM_DAL.Migrations
 
                     b.Navigation("Deal");
 
-                    b.Navigation("Product");
+                    b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("CRM_DAL.Entitys.Products", b =>
+                {
+                    b.HasOne("CRM_DAL.Entitys.Category", "Category")
+                        .WithMany("Products")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("CRM_DAL.Entitys.Product", b =>
@@ -549,7 +560,7 @@ namespace CRM_DAL.Migrations
                     b.Navigation("DealProducts");
                 });
 
-            modelBuilder.Entity("CRM_DAL.Entitys.Product", b =>
+            modelBuilder.Entity("CRM_DAL.Entitys.Products", b =>
                 {
                     b.Navigation("DealProducts");
                 });

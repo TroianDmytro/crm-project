@@ -28,7 +28,7 @@ namespace CRM_Business_Layer.Services
 
         public async Task<ProductDTO?> GetProductByIdAsync(Guid id)
         {
-            var result = await _context.Product.GetAsync(id);
+            var result = await _context.Product.GetByIdAsync(id);
             var resultDTO = _mapper.Map<ProductDTO>(result);
             return resultDTO;
         }
@@ -44,7 +44,7 @@ namespace CRM_Business_Layer.Services
         {
             Product product = _mapper.Map<Product>(productDTO);
 
-            var existingProduct = await _context.Product.GetAsync(product.ProductId);
+            var existingProduct = await _context.Product.GetByIdAsync(product.ProductId);
 
             if (existingProduct != null)
             {

@@ -87,7 +87,7 @@ namespace CRM_Server_API.Controllers
             try
             {
                 await _dealProductService.AddProductToDeal(dealProductDTO);
-                return Ok("Product added to deal successfully");
+                return Ok("Products added to deal successfully");
             }
             catch (KeyNotFoundException ex)
             {

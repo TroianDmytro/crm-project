@@ -24,7 +24,7 @@ namespace CRM_DAL.Entitys
 
         public DateTime? UpdatedAt { get; set; }
 
-        //Product on warehouse
-        //public ICollection<WarehouseProduct> WarehouseProducts { get; set; }
+        //Products on warehouse
+        public ICollection<WarehouseProduct> WarehouseProducts { get; set; }
     }
 }

@@ -9,7 +9,7 @@ namespace CRM_DAL.Interfaces
         IRepository<Product> Product { get; }
         IRepository<Deal> Deal { get; }
         IRepositoryDealProduct DealProduct { get; }
-        IRepository<Warehouse> Warehouse { get; }
+        IWarehouseRepository Warehouse { get; }
         IRepository<Category> Category { get; }
         AzureDbContext DbContext { get; }
         Task CommitChangesAsync();

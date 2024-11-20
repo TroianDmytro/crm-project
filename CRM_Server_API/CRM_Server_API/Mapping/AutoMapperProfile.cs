@@ -72,6 +72,10 @@ namespace CRM_Server_API.Mapping
             CreateMap<WarehouseDTO, WarehouseRequest>().ReverseMap();
 
             /////////////////////////////////////////////////////////////////////
+            CreateMap<WarehouseProductRequest, WarehouseDTO>();
+
+
+            /////////////////////////////////////////////////////////////////////
             //мапинг категории
             CreateMap<Category, CategoryDTO>().ReverseMap();
             CreateMap<CategoryDTO, CategoryResponce>();
