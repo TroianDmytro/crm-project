@@ -1,5 +1,6 @@
 ﻿using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CRM_Server_API.Blobs
 {
@@ -66,5 +67,34 @@ namespace CRM_Server_API.Blobs
             return fileUrl;
         }
 
+
+        public async Task<bool> DeleteFile(string? pathFile)
+        {
+            try
+            {
+                if(pathFile == null)
+                    throw new ArgumentNullException(nameof(pathFile));
+
+                string fileName = Path.GetFileName(pathFile);
+                //получение контейнера
+                BlobContainerClient containerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
+
+                //передайом название файла в blob для получения клиента
+                BlobClient blobClient = containerClient.GetBlobClient(fileName);
+                //удаление файла
+                await blobClient.DeleteAsync();
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
+
+            return true;
+
+        }
+
     }
+
+
 }

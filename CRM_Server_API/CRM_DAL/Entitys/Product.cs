@@ -27,7 +27,7 @@ namespace CRM_DAL.Entitys
 
         public ICollection<WarehouseProduct> WarehouseProducts { get; set; } // связь со складами
         public Guid CategoryId { get; set; }  // Связь с категориями
-        public Category Category { get; set; }
+        public Category Categorys { get; set; }
 
     }
 }

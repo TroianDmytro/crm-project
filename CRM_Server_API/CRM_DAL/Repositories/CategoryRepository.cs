@@ -24,6 +24,7 @@ namespace CRM_DAL.Repositories
         {
              var result = await _context.Categorys
                .Include(c => c.Products)
+               .AsNoTracking()
                .FirstOrDefaultAsync(c => c.Id == id);
             return result;
         }

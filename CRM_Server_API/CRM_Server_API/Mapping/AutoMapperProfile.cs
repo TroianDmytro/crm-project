@@ -49,6 +49,13 @@ namespace CRM_Server_API.Mapping
                 .ForMember(dest => dest.ProductId, opt => opt.MapFrom(src => src.ProductId))
                 .ForMember(dest => dest.QuantityTransaction, opt => opt.MapFrom(src => src.QuantityTransaction));
 
+
+            /////////////////////////////////////////////////////////////////////
+            //мапинг категории
+            CreateMap<Category, CategoryDTO>().ReverseMap();
+            CreateMap<CategoryDTO, CategoryResponce>();
+            CreateMap<CategoryDTO, CategoryResponceWithProduct>();
+
             /////////////////////////////////////////////////////////////////////
 
             // Маппинг с резолвером для загрузки файлов
@@ -58,13 +65,15 @@ namespace CRM_Server_API.Mapping
                     opt => opt.MapFrom<PhotoBlobUploadResolver>() // Конвертация IFormFile? -> string?
                 );
 
-            CreateMap<Product, ProductDTO>().ReverseMap();
+            CreateMap<Product, ProductDTO>()
+               .ForMember(dest => dest.Categorys, opt => opt.MapFrom(src => src.Categorys)) // Мапінг категорії
+               .ReverseMap();
 
             CreateMap<ProductDTO, ProductResponce>()
-            .ForMember(
-                dest => dest.PhotoBase64,
-                opt => opt.MapFrom<PhotoBlobToBase64Resolver>() // Используем резолвер для преобразования
-            );
+                .ForMember(
+                    dest => dest.PhotoBase64,
+                    opt => opt.MapFrom<PhotoBlobToBase64Resolver>() // Используем резолвер для преобразования
+                );
 
             /////////////////////////////////////////////////////////////////////
 
@@ -75,10 +84,7 @@ namespace CRM_Server_API.Mapping
             CreateMap<WarehouseProductRequest, WarehouseDTO>();
 
 
-            /////////////////////////////////////////////////////////////////////
-            //мапинг категории
-            CreateMap<Category, CategoryDTO>().ReverseMap();
-            CreateMap<CategoryDTO, CategoryResponce>();
+            
            
 
         }

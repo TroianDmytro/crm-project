@@ -96,15 +96,15 @@ namespace CRM_Server_API.Controllers
         }
 
         //////////////////////////////expetion ebout name is null
+
         /// <summary>
         /// Обновляем данные сделки по ID
         /// </summary>
         /// <param name="id">Идентификатор сделки</param>
-        /// <param name="dealUpdate">Обновленные данные сделки в формате <see cref="DealUpdate"/></param>
-        /// <returns>Возвращает код 200 при успешном изменении сделки</returns>
-        /// <response>Возвращает код 404 если сделка с указанным ID не найдена</response>
+        /// <param name="dealUpdate">Обновленные данные сделки в формате</param>
+        /// <returns>Возвращает код 200 при успешном изменении сделки. Возвращает код 404 если сделка с указанным ID не найдена</returns>
         [HttpPut("edit/{id}")]
-        public async Task<IActionResult> UpdateDeal(Guid id, [FromBody] DealUpdate dealUpdate)
+        public async Task<IActionResult> UpdateDeal(Guid id, [FromForm] DealUpdate dealUpdate)
         {
             bool deal = await _dealService.DealIsExists(id);
             if (!deal)

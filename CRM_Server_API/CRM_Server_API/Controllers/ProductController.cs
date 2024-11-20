@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using CRM_Business_Layer.DTO;
 using CRM_Business_Layer.Interfaces;
+using CRM_Server_API.Blobs;
 using CRM_Server_API.Models.Request;
 using CRM_Server_API.Models.Responce;
 using Microsoft.AspNetCore.Mvc;
@@ -13,11 +14,12 @@ namespace CRM_Server_API.Controllers
     {
         private readonly IProductService _productService;
         private readonly IMapper _mapper;
-
-        public ProductController(IProductService productService, IMapper mapper)
+        private readonly BlobModul _blobModule;
+        public ProductController(IProductService productService, IMapper mapper, BlobModul blobModul)
         {
             _productService = productService;
             _mapper = mapper;
+            _blobModule = blobModul;
         }
 
         /// <summary>
@@ -79,33 +81,30 @@ namespace CRM_Server_API.Controllers
         /// Обновление существующего продукта по ID
         /// </summary>
         /// <param name="id">Идентификатор продукта</param>
-        /// <param name="productUpdate">Данные для обновления продукта</param>
+        /// <param name="request">Данные для обновления продукта</param>
         /// <returns>Возвращает код 204 при успешном обновлении продукта</returns>
         /// <returns>Возвращает код 404 если продукт с указанным ID не найден</returns>
         [HttpPut("edit/{id}")]
-        public async Task<IActionResult> UpdateProduct(Guid id, [FromBody] ProductRequest productUpdate)
+        public async Task<IActionResult> UpdateProduct(Guid id, [FromForm] ProductRequest request)
         {
             bool productIsExists = await _productService.ProductIsExists(id);
-            if (productIsExists)
+            if (!productIsExists)
                 return NotFound("Products with this Id not found");
 
-            ProductDTO productDTO;
-            if (productUpdate.PhotoBlob != null)
-            {
-                productDTO = _mapper.Map<ProductDTO>(productUpdate);
-            }
-            else
-            {
-                productDTO = await _productService.GetProductByIdAsync(id);
+            ProductDTO? productDTO = await _productService.GetProductByIdAsync(id);
 
-                productDTO.Name = productUpdate.Name;
-                productDTO.Price = productUpdate.Price;
-                productDTO.Description = productUpdate.Description;
-                productDTO.Category = productUpdate.Category;
-                productDTO.AvailabilityStatus = productUpdate.AvailabilityStatus;
+            productDTO.Name = request.Name ?? productDTO.Name;
+            productDTO.Price = request.Price ?? productDTO.Price;
+            productDTO.Description = request.Description ?? productDTO.Description;
+            productDTO.CategoryId = request.CategoryId ?? productDTO.CategoryId;
+            productDTO.AvailabilityStatus = request.AvailabilityStatus ?? productDTO.AvailabilityStatus;
 
+            if (request.PhotoBlob != null)
+            {
+                string? pathOldFile = productDTO.PhotoBlob;
+                productDTO.PhotoBlob = await _blobModule.Upload(request.PhotoBlob);
+                await _blobModule.DeleteFile(pathOldFile);
             }
-            productDTO.ProductId = id;
 
             await _productService.UpdateProductAsync(productDTO);
             return NoContent();
@@ -123,7 +122,7 @@ namespace CRM_Server_API.Controllers
         public async Task<IActionResult> DeleteProduct(Guid id)
         {
             bool isExists = await _productService.ProductIsExists(id);
-            if (isExists)
+            if (!isExists)
                 return NotFound("Products with this Id not found");
 
             await _productService.DeleteProductAsync(id);

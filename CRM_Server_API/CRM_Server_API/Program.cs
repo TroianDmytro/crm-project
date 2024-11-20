@@ -86,20 +86,12 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 
 //Documentation
-//builder.Services.AddSwaggerGen(options =>
-//{
-//    var xmlFilename = "CRM_Server_API.xml";
-//    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFilename);
-//    options.IncludeXmlComments(xmlPath);
-//});
-//builder.Services.AddSwaggerGen(options =>
-//{
-//    var basePath = AppContext.BaseDirectory;
-
-//    var xmlPath = Path.Combine(basePath, "CRM_Server_API.xml");
-//    options.IncludeXmlComments(xmlPath);
-//});
-
+builder.Services.AddSwaggerGen(options =>
+{
+    var xmlFilename = "CRM_Server_API.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFilename);
+    options.IncludeXmlComments(xmlPath);
+});
 
 builder.Services.AddCors(options =>
 {

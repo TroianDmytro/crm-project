@@ -223,7 +223,6 @@ namespace CRM_DAL.Migrations
                     Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     AvailabilityStatus = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     PhotoBlob = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    QuantityStock = table.Column<int>(type: "int", nullable: false),
                     CategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
@@ -257,6 +256,32 @@ namespace CRM_DAL.Migrations
                         name: "FK_Deals_Clients_ClientId",
                         column: x => x.ClientId,
                         principalTable: "Clients",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "WarehouseProducts",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    WarehouseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    QuantityStock = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_WarehouseProducts", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_WarehouseProducts_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "ProductId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_WarehouseProducts_Warehouses_WarehouseId",
+                        column: x => x.WarehouseId,
+                        principalTable: "Warehouses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -339,6 +364,16 @@ namespace CRM_DAL.Migrations
                 name: "IX_Products_CategoryId",
                 table: "Products",
                 column: "CategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WarehouseProducts_ProductId",
+                table: "WarehouseProducts",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WarehouseProducts_WarehouseId",
+                table: "WarehouseProducts",
+                column: "WarehouseId");
         }
 
         /// <inheritdoc />
@@ -363,7 +398,7 @@ namespace CRM_DAL.Migrations
                 name: "DealProducts");
 
             migrationBuilder.DropTable(
-                name: "Warehouses");
+                name: "WarehouseProducts");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
@@ -376,6 +411,9 @@ namespace CRM_DAL.Migrations
 
             migrationBuilder.DropTable(
                 name: "Products");
+
+            migrationBuilder.DropTable(
+                name: "Warehouses");
 
             migrationBuilder.DropTable(
                 name: "Clients");
