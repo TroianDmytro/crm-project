@@ -21,7 +21,7 @@ namespace CRM_Business_Layer.Services
 
         public async Task<ClientDTO> GetClientById(Guid id)
         {
-            var client = await _unitOfWork.Client.GetAsync(id);
+            var client = await _unitOfWork.Client.GetByIdAsync(id);
             var clientDTO = _mapper.Map<ClientDTO>(client);
             return clientDTO;
         }

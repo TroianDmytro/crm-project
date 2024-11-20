@@ -24,7 +24,7 @@ namespace CRM_DAL.Repositories
             return result;
         }
 
-        public async Task<Deal?> GetAsync(Guid id)
+        public async Task<Deal?> GetByIdAsync(Guid id)
         {
             var result = await _context.Deals
                 .Include(d => d.Client)

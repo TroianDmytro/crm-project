@@ -50,7 +50,7 @@ namespace CRM_Server_API.Controllers
         {
             ProductDTO product = await _productService.GetProductByIdAsync(id);
             if (product == null)
-                return NotFound("Product with this Id not found");
+                return NotFound("Products with this Id not found");
 
             ProductResponce productResponce = _mapper.Map<ProductResponce>(product);
 
@@ -87,7 +87,7 @@ namespace CRM_Server_API.Controllers
         {
             bool productIsExists = await _productService.ProductIsExists(id);
             if (productIsExists)
-                return NotFound("Product with this Id not found");
+                return NotFound("Products with this Id not found");
 
             ProductDTO productDTO;
             if (productUpdate.PhotoBlob != null)
@@ -124,7 +124,7 @@ namespace CRM_Server_API.Controllers
         {
             bool isExists = await _productService.ProductIsExists(id);
             if (isExists)
-                return NotFound("Product with this Id not found");
+                return NotFound("Products with this Id not found");
 
             await _productService.DeleteProductAsync(id);
             return Ok();

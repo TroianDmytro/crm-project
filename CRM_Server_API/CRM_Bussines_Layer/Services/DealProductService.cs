@@ -52,7 +52,7 @@ namespace CRM_Business_Layer.Services
 
             bool productExist = await _unitOfWork.DealProduct.ProductExists(dealProductDTO.ProductId);
             if (!productExist)
-                throw new ArgumentNullException("Product is not exists.");
+                throw new ArgumentNullException("Products is not exists.");
 
             return _mapper.Map<DealProduct>(dealProductDTO);
         }

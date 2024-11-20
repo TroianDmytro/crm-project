@@ -26,7 +26,7 @@ namespace CRM_Business_Layer.Services
 
         public async Task<DealDTO> GetDealByIdAsync(Guid id)
         {
-            var deal = await _context.Deal.GetAsync(id);
+            var deal = await _context.Deal.GetByIdAsync(id);
             var result = _mapper.Map<DealDTO>(deal);
             return result;
         }
@@ -44,7 +44,7 @@ namespace CRM_Business_Layer.Services
 
         public async Task UpdateDealAsync(Guid id, DealUpdate dealUpdate)
         {
-            var deal = await _context.Deal.GetAsync(id) ?? throw new InvalidOperationException();
+            var deal = await _context.Deal.GetByIdAsync(id) ?? throw new InvalidOperationException();
 
             deal.Title = dealUpdate.Title ?? deal.Title;
             deal.Amount = dealUpdate.Amount ?? deal.Amount;

@@ -22,11 +22,10 @@ namespace CRM_DAL.Entitys
 
         public string? PhotoBlob { get; set; }
 
-        public int QuantityStock { get; set; } = 0; // Количество продукта на складе
-
         [Required]
         public ICollection<DealProduct> DealProducts { get; set; } //  Связь с сделками
 
+        public ICollection<WarehouseProduct> WarehouseProducts { get; set; } // связь со складами
         public Guid CategoryId { get; set; }  // Связь с категориями
         public Category Category { get; set; }
 

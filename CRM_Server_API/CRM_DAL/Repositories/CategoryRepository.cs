@@ -20,7 +20,7 @@ namespace CRM_DAL.Repositories
             return result;
         }
 
-        public async Task<Category?> GetAsync(Guid id)
+        public async Task<Category?> GetByIdAsync(Guid id)
         {
              var result = await _context.Categorys
                .Include(c => c.Products)
