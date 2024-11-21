@@ -36,7 +36,6 @@ namespace CRM_Business_Layer.Services
         {
             var result = await _unitOfWork.Warehouse.GetAllWithProductAsync();
             List<WarehouseDTO> resultDTO = _mapper.Map<List<WarehouseDTO>>(result);
-
             return resultDTO;
         }
 
@@ -90,6 +89,7 @@ namespace CRM_Business_Layer.Services
         public async Task AddProductToWarehouse(WarehouseProductDTO warehouseProductDTO)
         {
             WarehouseProduct warehouseProduct = _mapper.Map<WarehouseProduct>(warehouseProductDTO);
+            
             await _unitOfWork.Warehouse.AddProductToWarehouse(warehouseProduct);
             await _unitOfWork.CommitChangesAsync();
         }
@@ -121,9 +121,9 @@ namespace CRM_Business_Layer.Services
         /// <param name="id">id записи склад-продукт</param>
         /// <param name="quantity">Количество которое отнимется</param>
         /// <returns></returns>
-        public async Task UpdateProductQuantitySubtracting(Guid id, int quantity)
+        public async Task UpdateProductQuantitySubtracting(Guid warehouseid, Guid productId, int quantity)
         {
-            await _unitOfWork.Warehouse.UpdateProductQuantitySubtracting(id, quantity);
+            await _unitOfWork.Warehouse.UpdateProductQuantitySubtracting(warehouseid, productId, quantity);
             await _unitOfWork.CommitChangesAsync();
         }
 
@@ -134,9 +134,9 @@ namespace CRM_Business_Layer.Services
         /// <param name="quantity">Количество которое добавится</param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>
-        public async Task UpdateProductQuantityAdd(Guid id, int quantity)
+        public async Task UpdateProductQuantityAdd(Guid warehouseid, Guid productId, int quantity)
         {
-            await UpdateProductQuantityAdd(id, quantity);
+            await UpdateProductQuantityAdd(warehouseid, productId, quantity);
             await _unitOfWork.CommitChangesAsync();
         }
 
@@ -179,6 +179,6 @@ namespace CRM_Business_Layer.Services
             _unitOfWork.Dispose();
         }
 
-        
+       
     }
 }

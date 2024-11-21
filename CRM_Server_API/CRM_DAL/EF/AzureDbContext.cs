@@ -47,7 +47,7 @@ namespace CRM_DAL.EF
                 .HasForeignKey(d => d.ClientId); // Внешний ключ в таблице "Deal"
 
             builder.Entity<Product>()
-                .HasOne(p => p.Category)
+                .HasOne(p => p.Categorys)
                 .WithMany(c => c.Products)
                 .HasForeignKey(p => p.CategoryId);
 
@@ -65,6 +65,10 @@ namespace CRM_DAL.EF
                 .OnDelete(DeleteBehavior.Restrict); // Например, запрет на удаление продукта, если он используется
 
 
+            builder.Entity<Product>()
+                .HasOne(p => p.Categorys)
+                .WithMany(c => c.Products)
+                .HasForeignKey(p => p.CategoryId);
 
 
             base.OnModelCreating(builder);

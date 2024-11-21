@@ -1,9 +1,9 @@
-﻿namespace CRM_Server_API.Blobs
-{
-    using AutoMapper;
-    using CRM_Business_Layer.DTO;
-    using CRM_Server_API.Models.Responce;
+﻿using AutoMapper;
+using CRM_Business_Layer.DTO;
+using CRM_Server_API.Models.Responce;
 
+namespace CRM_Server_API.Blobs
+{
     public class PhotoBlobToBase64Resolver : IValueResolver<ProductDTO, ProductResponce, string?>
     {
         private readonly BlobModul _blobModul;

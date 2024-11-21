@@ -8,6 +8,7 @@ namespace CRM_DAL.Repositories
     public class ClientRepository : IRepository<Client>
     {
         private readonly AzureDbContext _context;
+        
         public ClientRepository(AzureDbContext context)
         {
             _context = context;
@@ -19,7 +20,24 @@ namespace CRM_DAL.Repositories
                                         .Include(c=>c.Deals)
                                         .ThenInclude(d=>d.DealProducts)
                                         .ThenInclude(dp => dp.Product)
-                                        .FirstOrDefaultAsync(c => c.Id == id); 
+                                        .AsNoTracking()
+                                        .FirstOrDefaultAsync(c => c.Id == id);
+
+            // Проходим по всем сделкам клиента
+            foreach (var deal in result.Deals)
+            {
+                // Проходим по каждому продукту в сделке
+                foreach (var dealProduct in deal.DealProducts)
+                {
+                    var product = dealProduct.Product;
+
+                    // Если продукт найден, присваиваем его количество из QuantityTransaction
+                    if (product != null)
+                    {
+                        product.Quantity = dealProduct.QuantityTransaction;
+                    }
+                }
+            }
             return result;
         }
 
@@ -29,7 +47,28 @@ namespace CRM_DAL.Repositories
                                         .Include(c => c.Deals)
                                         .ThenInclude(d => d.DealProducts)
                                         .ThenInclude(dp=>dp.Product)
+                                        .ThenInclude(p=>p.Categorys)
                                         .ToListAsync();
+
+            // Проходим по каждому клиенту
+            foreach (var client in result)
+            {
+                // Проходим по всем сделкам клиента
+                foreach (var deal in client.Deals)
+                {
+                    // Проходим по каждому продукту в сделке
+                    foreach (var dealProduct in deal.DealProducts)
+                    {
+                        var product = dealProduct.Product;
+
+                        // Если продукт найден, присваиваем его количество из QuantityTransaction
+                        if (product != null)
+                        {
+                            product.Quantity = dealProduct.QuantityTransaction;
+                        }
+                    }
+                }
+            }
             return result;
         }
 

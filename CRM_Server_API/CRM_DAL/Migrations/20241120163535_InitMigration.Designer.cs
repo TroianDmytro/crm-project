@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CRM_DAL.Migrations
 {
     [DbContext(typeof(AzureDbContext))]
-    [Migration("20241119221355_InitMigration")]
+    [Migration("20241120163535_InitMigration")]
     partial class InitMigration
     {
         /// <inheritdoc />
@@ -240,7 +240,7 @@ namespace CRM_DAL.Migrations
                     b.ToTable("DealProducts");
                 });
 
-            modelBuilder.Entity("CRM_DAL.Entitys.Products", b =>
+            modelBuilder.Entity("CRM_DAL.Entitys.Product", b =>
                 {
                     b.Property<Guid>("ProductId")
                         .ValueGeneratedOnAdd()
@@ -269,9 +269,6 @@ namespace CRM_DAL.Migrations
                     b.Property<decimal>("Price")
                         .HasPrecision(8, 2)
                         .HasColumnType("decimal(8,2)");
-
-                    b.Property<int>("QuantityStock")
-                        .HasColumnType("int");
 
                     b.HasKey("ProductId");
 
@@ -310,6 +307,30 @@ namespace CRM_DAL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Warehouses");
+                });
+
+            modelBuilder.Entity("CRM_DAL.Entitys.WarehouseProduct", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("QuantityStock")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("WarehouseId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("WarehouseId");
+
+                    b.ToTable("WarehouseProducts");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -464,7 +485,7 @@ namespace CRM_DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CRM_DAL.Entitys.Products", "Products")
+                    b.HasOne("CRM_DAL.Entitys.Product", "Product")
                         .WithMany("DealProducts")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -472,10 +493,10 @@ namespace CRM_DAL.Migrations
 
                     b.Navigation("Deal");
 
-                    b.Navigation("Products");
+                    b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("CRM_DAL.Entitys.Products", b =>
+            modelBuilder.Entity("CRM_DAL.Entitys.Product", b =>
                 {
                     b.HasOne("CRM_DAL.Entitys.Category", "Category")
                         .WithMany("Products")
@@ -484,6 +505,25 @@ namespace CRM_DAL.Migrations
                         .IsRequired();
 
                     b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("CRM_DAL.Entitys.WarehouseProduct", b =>
+                {
+                    b.HasOne("CRM_DAL.Entitys.Product", "Products")
+                        .WithMany("WarehouseProducts")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("CRM_DAL.Entitys.Warehouse", "Warehouses")
+                        .WithMany("WarehouseProducts")
+                        .HasForeignKey("WarehouseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Products");
+
+                    b.Navigation("Warehouses");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -552,9 +592,16 @@ namespace CRM_DAL.Migrations
                     b.Navigation("DealProducts");
                 });
 
-            modelBuilder.Entity("CRM_DAL.Entitys.Products", b =>
+            modelBuilder.Entity("CRM_DAL.Entitys.Product", b =>
                 {
                     b.Navigation("DealProducts");
+
+                    b.Navigation("WarehouseProducts");
+                });
+
+            modelBuilder.Entity("CRM_DAL.Entitys.Warehouse", b =>
+                {
+                    b.Navigation("WarehouseProducts");
                 });
 #pragma warning restore 612, 618
         }

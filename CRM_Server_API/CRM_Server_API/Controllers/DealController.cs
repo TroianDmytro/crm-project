@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using CRM_Business_Layer.DTO;
 using CRM_Business_Layer.Interfaces;
+using CRM_DAL.Entitys;
+using CRM_Server_API.Blobs;
 using CRM_Server_API.Models.Request;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,12 +16,18 @@ namespace CRM_Server_API.Controllers
         private readonly IDealProductService _dealProductService;
         private readonly IClientService _clientService;
         private readonly IMapper _mapper;
-        public DealController(IMapper mapper, IDealService dealService, IDealProductService dealProductService, IClientService clientService)
+        private readonly BlobModul _blobModul;
+        public DealController(IMapper mapper,
+            IDealService dealService,
+            IDealProductService dealProductService,
+            IClientService clientService,
+            BlobModul blobModul)
         {
             _mapper = mapper;
             _dealService = dealService;
             _dealProductService = dealProductService;
             _clientService = clientService;
+            _blobModul = blobModul;
         }
 
         /// <summary>
@@ -31,6 +39,16 @@ namespace CRM_Server_API.Controllers
         public async Task<IActionResult> GetDealList()
         {
             var dealsList = await _dealService.GetAllDealsAsync();
+
+            foreach (var deal in dealsList)
+            {
+                foreach (var product in deal.ProductDTOs)
+                {
+                    if (product.PhotoBlob != null)
+                        product.PhotoBlob = await _blobModul.Download(product.PhotoBlob);
+                }
+            }
+
             return Ok(dealsList);
         }
 
@@ -48,6 +66,12 @@ namespace CRM_Server_API.Controllers
             if (deal == null)
                 return NotFound("Deal with this Id not found");
 
+            foreach (var product in deal.ProductDTOs)
+            {
+                if (product.PhotoBlob != null)
+                    product.PhotoBlob = await _blobModul.Download(product.PhotoBlob);
+            }
+
             return Ok(deal);
         }
 
@@ -59,7 +83,7 @@ namespace CRM_Server_API.Controllers
         /// <returns>Возвращает код 200 при успешном создании сделки</returns>
         /// <returns>Возвращает код 404 если клиент с указанным ID не найден</returns>
         [HttpPost("create/")]
-        public async Task<IActionResult> AddDeal([FromForm] DealRequest dealRequest)
+        public async Task<IActionResult> AddDeal([FromBody] DealRequest dealRequest)
         {
             var client = await _clientService.GetClientById(dealRequest.ClientId);
 
@@ -82,7 +106,7 @@ namespace CRM_Server_API.Controllers
         /// <returns>Возвращает код 200 и сообщение при успешном добавлении продукта в сделку</returns>
         /// <returns>Возвращает код 404 если продукт или сделка с указанным ID не найдены</returns>
         [HttpPost("add_product_to_deal/")]
-        public async Task<IActionResult> AddProductToDeal([FromForm] DealProductDTO dealProductDTO)
+        public async Task<IActionResult> AddProductToDeal([FromBody] DealProductDTO dealProductDTO)
         {
             try
             {
@@ -96,13 +120,13 @@ namespace CRM_Server_API.Controllers
         }
 
         //////////////////////////////expetion ebout name is null
+
         /// <summary>
         /// Обновляем данные сделки по ID
         /// </summary>
         /// <param name="id">Идентификатор сделки</param>
-        /// <param name="dealUpdate">Обновленные данные сделки в формате <see cref="DealUpdate"/></param>
-        /// <returns>Возвращает код 200 при успешном изменении сделки</returns>
-        /// <response>Возвращает код 404 если сделка с указанным ID не найдена</response>
+        /// <param name="dealUpdate">Обновленные данные сделки в формате</param>
+        /// <returns>Возвращает код 200 при успешном изменении сделки. Возвращает код 404 если сделка с указанным ID не найдена</returns>
         [HttpPut("edit/{id}")]
         public async Task<IActionResult> UpdateDeal(Guid id, [FromBody] DealUpdate dealUpdate)
         {
@@ -110,7 +134,7 @@ namespace CRM_Server_API.Controllers
             if (!deal)
                 return NotFound($"Deal with id {id} not found");
 
-            await _dealService.UpdateDealAsync(id,dealUpdate);
+            await _dealService.UpdateDealAsync(id, dealUpdate);
 
             return Ok("Deal updated successfully");
         }

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CRM_DAL.Migrations
 {
     [DbContext(typeof(AzureDbContext))]
-    [Migration("20241119154342_CreateCategory")]
-    partial class CreateCategory
+    [Migration("20241120233243_UpdateProduct")]
+    partial class UpdateProduct
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -133,7 +133,7 @@ namespace CRM_DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categorys");
                 });
 
             modelBuilder.Entity("CRM_DAL.Entitys.Client", b =>
@@ -250,11 +250,6 @@ namespace CRM_DAL.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("Category")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
                     b.Property<Guid>("CategoryId")
                         .HasColumnType("uniqueidentifier");
 
@@ -275,7 +270,7 @@ namespace CRM_DAL.Migrations
                         .HasPrecision(8, 2)
                         .HasColumnType("decimal(8,2)");
 
-                    b.Property<int>("QuantityStock")
+                    b.Property<int>("Quantity")
                         .HasColumnType("int");
 
                     b.HasKey("ProductId");
@@ -283,6 +278,62 @@ namespace CRM_DAL.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("CRM_DAL.Entitys.Warehouse", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Warehouses");
+                });
+
+            modelBuilder.Entity("CRM_DAL.Entitys.WarehouseProduct", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("QuantityStock")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("WarehouseId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("WarehouseId");
+
+                    b.ToTable("WarehouseProducts");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -450,13 +501,32 @@ namespace CRM_DAL.Migrations
 
             modelBuilder.Entity("CRM_DAL.Entitys.Product", b =>
                 {
-                    b.HasOne("CRM_DAL.Entitys.Category", "CategoryEntity")
+                    b.HasOne("CRM_DAL.Entitys.Category", "Categorys")
                         .WithMany("Products")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("CategoryEntity");
+                    b.Navigation("Categorys");
+                });
+
+            modelBuilder.Entity("CRM_DAL.Entitys.WarehouseProduct", b =>
+                {
+                    b.HasOne("CRM_DAL.Entitys.Product", "Products")
+                        .WithMany("WarehouseProducts")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("CRM_DAL.Entitys.Warehouse", "Warehouses")
+                        .WithMany("WarehouseProducts")
+                        .HasForeignKey("WarehouseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Products");
+
+                    b.Navigation("Warehouses");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -528,6 +598,13 @@ namespace CRM_DAL.Migrations
             modelBuilder.Entity("CRM_DAL.Entitys.Product", b =>
                 {
                     b.Navigation("DealProducts");
+
+                    b.Navigation("WarehouseProducts");
+                });
+
+            modelBuilder.Entity("CRM_DAL.Entitys.Warehouse", b =>
+                {
+                    b.Navigation("WarehouseProducts");
                 });
 #pragma warning restore 612, 618
         }

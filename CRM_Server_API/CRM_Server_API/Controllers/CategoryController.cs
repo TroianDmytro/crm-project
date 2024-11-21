@@ -43,9 +43,9 @@ namespace CRM_Server_API.Controllers
         public async Task<IActionResult> GetAllCategoriesWithProducts()
         {
             var listCategoty = await _categoryService.GetAllCategoriesAsync();
-            List<CategoryDTO> categoriesDTO = listCategoty.ToList();
+            List<CategoryResponceWithProduct> categoriesResponce = _mapper.Map<List<CategoryResponceWithProduct>>(listCategoty.ToList());
 
-            return Ok(categoriesDTO);
+            return Ok(categoriesResponce);
         }
 
         /// <summary>
@@ -79,7 +79,8 @@ namespace CRM_Server_API.Controllers
             if (category == null)
                 return NotFound("Category with this Id not found");
 
-            return Ok(category);
+            CategoryResponceWithProduct responceCategory = _mapper.Map<CategoryResponceWithProduct>(category);
+            return Ok(responceCategory);
         }
 
 

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using CRM_Business_Layer.DTO;
 using CRM_Business_Layer.Interfaces;
+using CRM_Server_API.Blobs;
 using CRM_Server_API.Models.Request;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,11 +13,13 @@ namespace CRM_Server_API.Controllers
     {
         private readonly IWarehouseService _warehouse;
         private readonly IMapper _mapper;
+        private readonly BlobModul _blobModul;
 
-        public WarehouseController(IWarehouseService warehouse, IMapper mapper)
+        public WarehouseController(IWarehouseService warehouse, IMapper mapper, BlobModul blobModul)
         {
             _warehouse = warehouse;
             _mapper = mapper;
+            _blobModul = blobModul;
         }
 
         /// <summary>
@@ -40,7 +43,7 @@ namespace CRM_Server_API.Controllers
         public async Task<IActionResult> GetWarehouseById(Guid id)
         {
             WarehouseDTO warehouse = await _warehouse.GetWarehouseByIdAsync(id);
-            if (warehouse == null) 
+            if (warehouse == null)
                 return NotFound();
 
             return Ok(warehouse);
@@ -55,6 +58,18 @@ namespace CRM_Server_API.Controllers
         {
             var warehouse = await _warehouse.GetAllWarehouseWithProductAsync();
             List<WarehouseDTO> warehouseDTO = warehouse.ToList();
+
+            foreach (var item in warehouseDTO)
+            {
+                foreach (var itemDTO in item.ProductDTOs)
+                {
+                    if (itemDTO.PhotoBlob != null)
+                    {
+                        itemDTO.PhotoBlob = await _blobModul.Download(itemDTO.PhotoBlob);
+                    }
+                }
+            }
+
             return Ok(warehouseDTO);
         }
 
@@ -66,6 +81,15 @@ namespace CRM_Server_API.Controllers
         public async Task<IActionResult> GetWarehouseByIdWithProduct(Guid id)
         {
             var result = await _warehouse.GetWarehouseByIdWithProductsAsync(id);
+
+            foreach (var itemDTO in result.ProductDTOs)
+            {
+                if (itemDTO.PhotoBlob != null)
+                {
+                    itemDTO.PhotoBlob = await _blobModul.Download(itemDTO.PhotoBlob);
+                }
+            }
+
             return Ok(result);
         }
 
@@ -91,8 +115,9 @@ namespace CRM_Server_API.Controllers
         [HttpPost("add_product_to_warehouse/")]
         public async Task<IActionResult> AddProductToWarehouse([FromBody] WarehouseProductRequest warehouseProductRequest)
         {
-            WarehouseDTO warehouse = _mapper.Map<WarehouseDTO>(warehouseProductRequest);
-            await _warehouse.AddWarehousesAsync(warehouse);
+
+            WarehouseProductDTO warehouseProduct = _mapper.Map<WarehouseProductDTO>(warehouseProductRequest);
+            await _warehouse.AddProductToWarehouse(warehouseProduct);
 
             return Ok();
         }
@@ -115,7 +140,7 @@ namespace CRM_Server_API.Controllers
             {
                 return NotFound(ex.Message);
             }
-            
+
             return Ok();
         }
 
@@ -126,10 +151,10 @@ namespace CRM_Server_API.Controllers
         /// <param name="id">id записи склад-продукт</param>
         /// <param name="quantity">Количество которое отнимется</param>
         /// <returns></returns>
-        [HttpPut("edit_product_sub/{id}")]
-        public async Task<IActionResult> UpdateProductSubtracting(Guid id, int quantity)
+        [HttpPut("edit_product_sub/")]
+        public async Task<IActionResult> UpdateProductSubtracting(Guid warehouseid, Guid productId, int quantity)
         {
-            await _warehouse.UpdateProductQuantitySubtracting(id, quantity);
+            await _warehouse.UpdateProductQuantitySubtracting(warehouseid, productId, quantity);
             return Ok();
         }
 
@@ -139,10 +164,10 @@ namespace CRM_Server_API.Controllers
         /// <param name="id">id записи склад-продукт</param>
         /// <param name="quantity">Количество которое добавится</param>
         /// <returns></returns>
-        [HttpPut("edit_product_add/{id}")]
-        public async Task<IActionResult> UpdateProductQuantityAdd(Guid id, int quantity)
+        [HttpPut("edit_product_add/")]
+        public async Task<IActionResult> UpdateProductQuantityAdd(Guid warehouseid, Guid productId, int quantity)
         {
-            await _warehouse.UpdateProductQuantityAdd(id, quantity);
+            await _warehouse.UpdateProductQuantityAdd(warehouseid, productId, quantity);
             return Ok();
         }
 

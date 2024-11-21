@@ -19,8 +19,25 @@ namespace CRM_DAL.Repositories
             var result = await _context.Deals
                 .Include(d=>d.Client)
                 .Include(d=>d.DealProducts)
-                .ThenInclude(dp=>dp.Product)
+                .ThenInclude(p=>p.Product)
                 .ToListAsync();
+
+            // Проходим по каждой сделке
+            foreach (var deal in result)
+            {
+                // Проходим по каждому продукту в сделке
+                foreach (var dealProduct in deal.DealProducts)
+                {
+                    var product = dealProduct.Product;
+
+                    // Если продукт найден, присваиваем его количество из QuantityTransaction
+                    if (product != null)
+                    {
+                        product.Quantity = dealProduct.QuantityTransaction;
+                    }
+                }
+            }
+
             return result;
         }
 
@@ -31,6 +48,20 @@ namespace CRM_DAL.Repositories
                 .Include(d => d.DealProducts)
                 .ThenInclude(dp => dp.Product)
                 .FirstOrDefaultAsync(d => d.DealId == id);
+
+            // Проходим по каждому продукту в сделке
+            foreach (var dealProduct in result.DealProducts)
+            {
+                var product = dealProduct.Product;
+
+                // Если продукт найден, присваиваем его количество из QuantityTransaction
+                if (product != null)
+                {
+                    product.Quantity = dealProduct.QuantityTransaction;
+                }
+            }
+            // Проходим по каждой сделке
+            
             return result;
         }
 

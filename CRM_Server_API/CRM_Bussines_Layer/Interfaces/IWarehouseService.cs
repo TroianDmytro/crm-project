@@ -11,8 +11,8 @@ namespace CRM_Business_Layer.Interfaces
         Task AddWarehousesAsync(WarehouseDTO warehouseDTO);
         Task AddProductToWarehouse(WarehouseProductDTO warehouseProductDTO);
         Task UpdateWarehousesAsync(Guid id, WarehouseDTO updateWarehouse);
-        Task UpdateProductQuantitySubtracting(Guid id, int quantity);
-        Task UpdateProductQuantityAdd(Guid id, int quantity);
+        Task UpdateProductQuantitySubtracting(Guid warehouseid, Guid productId, int quantity);
+        Task UpdateProductQuantityAdd(Guid warehouseid, Guid productId, int quantity);
         Task DeleteWarehousesAsync(Guid id);
         Task DeleteProductWithWarehouseAsync(Guid warehouseId, Guid productId);
         Task<bool> IsExists(Guid dealId);
