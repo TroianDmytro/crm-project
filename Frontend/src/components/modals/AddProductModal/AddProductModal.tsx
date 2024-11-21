@@ -10,30 +10,46 @@ import { faCheck, faXmark, faPlus, faEraser, faCartFlatbed } from '@fortawesome/
 
 import { apiUrl } from '../../config.ts';
 
+type Category = {
+   id: string;
+   name: string;
+}
+
 type FormData = {
    name: string;
    price: number;
    description?: string;
-   category?: string;
+   categorys?: Category | null;
    availabilityStatus?: string;
    photoBlob?: Uint8Array;
-   quantityStock: number;
 };
 
 const AddProductModal = ({ show, handleClose, onProductUpdated }) => {
    const [loading, setLoading] = useState(false);
-
    const [status, setStatus] = useState("Out of stock");
+
+   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+   const [categories, setCategories] = useState<Category[]>([]);
    const [formData, setFormData] = useState<FormData>({
       name: "",
       price: 0,
       description: "",
-      category: "",
-      availabilityStatus: "Out of stock",
-      quantityStock: 0
+      categorys: null,
+      availabilityStatus: "Out of stock"
    });
 
    useEffect(() => {
+      const fetchCategories = async () => {
+         try {
+            const response = await axios.get(`${apiUrl}/category`);
+            setCategories(response.data);
+         } catch (error) {
+            console.error('Error fetching categories:', error);
+         }
+      };
+
+      fetchCategories();
+
       if (!show) {
          handleClear();
       }
@@ -45,9 +61,8 @@ const AddProductModal = ({ show, handleClose, onProductUpdated }) => {
          name: "",
          price: 0,
          description: "",
-         category: "",
-         availabilityStatus: "Out of stock",
-         quantityStock: 0
+         categorys: null,
+         availabilityStatus: "Out of stock"
       });
    };
 
@@ -55,8 +70,14 @@ const AddProductModal = ({ show, handleClose, onProductUpdated }) => {
       setLoading(true);
 
       try {
-         const response = await axios.post(`${apiUrl}/product/add/`, formData);
-         console.log("Product added successfully:", response.data);
+         const response = await axios.post(`${apiUrl}/product/add/`, {
+            name: formData.name,
+            price: formData.price,
+            description: formData.description,
+            categoryId: selectedCategory,
+            availabilityStatus: status,
+            photoBlob: null
+         });
 
          if (onProductUpdated) {
             onProductUpdated(response.data);
@@ -69,6 +90,11 @@ const AddProductModal = ({ show, handleClose, onProductUpdated }) => {
       } finally {
          setLoading(false);
       }
+   };
+
+   const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+      const selectedValue = event.target.value;
+      setSelectedCategory(selectedValue);
    };
 
    const handleStatusChange = () => {
@@ -151,13 +177,19 @@ const AddProductModal = ({ show, handleClose, onProductUpdated }) => {
                </Form.Group>
                <Form.Group className="mb-3 d-flex">
                   <Form.Label className="me-2">Category:</Form.Label>
-                  <Form.Control
-                     type="text"
-                     name="category"
-                     value={formData.category}
-                     onChange={handleInputChange}
-                     placeholder="Enter category"
-                  />
+                  <Form.Select
+                     value={selectedCategory || ''}
+                     onChange={handleCategoryChange}
+                  >
+                     <option value="" disabled>
+                        Select a category
+                     </option>
+                     {categories.map((category) => (
+                        <option key={category.id} value={category.id}>
+                           {category.name}
+                        </option>
+                     ))}
+                  </Form.Select>
                </Form.Group>
                <Form.Group className="mb-3 d-flex">
                   <Form.Label className="me-2">Status:</Form.Label>
@@ -171,17 +203,6 @@ const AddProductModal = ({ show, handleClose, onProductUpdated }) => {
                      )}
                      {status}
                   </Button>
-               </Form.Group>
-
-               <Form.Group className="mb-3 d-flex">
-                  <Form.Label className="me-2">Quantity stock:</Form.Label>
-                  <Form.Control
-                     type="text"
-                     name="quantityStock"
-                     value={formData.quantityStock}
-                     onChange={handleInputChange}
-                     placeholder="Enter quantity stock"
-                  />
                </Form.Group>
             </Form>
          </Modal.Body>

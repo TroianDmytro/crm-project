@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-export const ManagersPageWrapper = styled.div`
+export const DealsPageWrapper = styled.div`
 width: 100%;
 display: flex;
 justify-content: center;
@@ -8,7 +8,7 @@ background-color: rgb(23, 25, 27);
 height: 92vh;
 `;
 
-export const ManagersPageContainer = styled.div`
+export const DealsPageContainer = styled.div`
 width: 1120px;
 margin-top: 24px;
 `;
@@ -17,16 +17,16 @@ export const ButtonsContainer = styled.div`
 display: flex;
 `;
 
-export const ManagersHeaderContainer = styled.div`
+export const DealsHeaderContainer = styled.div`
 display: flex;
 width: 1120px;
-justify-content: center;
+justify-content: space-between;
 margin-bottom: 12px;
 align-items: center;
 `;
 
-export const HeaderText = styled.h5`
+export const DealsHeader = styled.h5`
 color: white;
-margin: 0;  
-margin-bottom: 16px;
+margin: 0;
+margin-left: 8px;
 `;

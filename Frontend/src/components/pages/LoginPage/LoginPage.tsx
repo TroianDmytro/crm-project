@@ -21,7 +21,7 @@ const LoginPage: FC<LoginPageProps> = () => {
       e.preventDefault();
 
       try {
-         const response = await axios.post(`${apiUrl}/auth/login/`, {
+         const response = await axios.post(`${apiUrl}/auth/login`, {
             UserName: username,
             Password: password
          });

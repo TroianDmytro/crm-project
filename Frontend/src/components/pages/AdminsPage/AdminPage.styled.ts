@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-export const ManagersPageWrapper = styled.div`
+export const AdminsPageWrapper = styled.div`
 width: 100%;
 display: flex;
 justify-content: center;
@@ -8,7 +8,7 @@ background-color: rgb(23, 25, 27);
 height: 92vh;
 `;
 
-export const ManagersPageContainer = styled.div`
+export const AdminsPageContainer = styled.div`
 width: 1120px;
 margin-top: 24px;
 `;
@@ -17,7 +17,7 @@ export const ButtonsContainer = styled.div`
 display: flex;
 `;
 
-export const ManagersHeaderContainer = styled.div`
+export const AdminsHeaderContainer = styled.div`
 display: flex;
 width: 1120px;
 justify-content: center;

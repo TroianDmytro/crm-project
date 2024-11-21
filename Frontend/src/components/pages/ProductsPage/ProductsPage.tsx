@@ -20,15 +20,20 @@ import { apiUrl } from '../../config.ts';
 
 interface ProductsPageProps { }
 
+type Category = {
+   id: string;
+   name: string;
+}
+
 type Product = {
    productId: string;
    name: string;
    price: number;
    description?: string;
-   category?: string;
+   categorys?: Category;
    availabilityStatus?: string;
    photoBlob?: Uint8Array;
-   quantityStock: number;
+   quantity: number;
 };
 
 const ProductsPage: FC<ProductsPageProps> = () => {
@@ -122,10 +127,10 @@ const ProductsPage: FC<ProductsPageProps> = () => {
                               cursor: 'pointer'
                            }}
                         >
-                           <td>{product.name}</td>
+                           <td style={{whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: "340px"}}>{product.name}</td>
                            <td>{product.price}</td>
                            <td style={{whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: "340px"}}>{product.description}</td>
-                           <td>{product.category}</td>
+                           <td>{product.categorys?.name || "No category"}</td>
                            <td>
                               {product.availabilityStatus === "In stock" ? (
                                  <FontAwesomeIcon style={{ marginRight: "4px" }} icon={faCheck} />
@@ -136,7 +141,7 @@ const ProductsPage: FC<ProductsPageProps> = () => {
                               )}
                               {product.availabilityStatus}
                            </td>
-                           <td>{product.quantityStock}</td>
+                           <td>{product.quantity}</td>
                         </tr>
                      ))}
                   </tbody>

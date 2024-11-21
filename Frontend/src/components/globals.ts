@@ -7,5 +7,5 @@ declare global {
   }
 }
 
-window.loggedIn = 'boss';
-window.nickname = 'testUser';
+window.loggedIn = "boss";
+window.nickname = "testBoss";

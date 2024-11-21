@@ -1,10 +1,10 @@
 import React, { FC, useState, useEffect } from 'react';
 import {
-   ManagersPageWrapper,
-   ManagersPageContainer,
-   ManagersHeaderContainer,
+   AdminsPageWrapper,
+   AdminsPageContainer,
+   AdminsHeaderContainer,
    HeaderText
-} from './ManagersPage.styled.ts';
+} from './AdminPage.styled.ts';
 
 import axios from 'axios';
 
@@ -15,7 +15,7 @@ import { Form, Button, Spinner } from 'react-bootstrap';
 
 import { apiUrl } from '../../config.ts';
 
-interface ManagersPageProps { }
+interface AdminsPageProps { }
 
 type FormData = {
    name: string,
@@ -31,7 +31,7 @@ type FormData = {
    password: string
 }
 
-const ManagersPage: FC<ManagersPageProps> = () => {
+const AdminsPage: FC<AdminsPageProps> = () => {
    const [loading, setLoading] = useState(false);
    const [formData, setFormData] = useState<FormData>({
       name: "",
@@ -46,6 +46,14 @@ const ManagersPage: FC<ManagersPageProps> = () => {
       email: "",
       password: ""
    });
+
+   const handleInputChange = (e) => {
+      const { name, value } = e.target;
+      setFormData((prev) => ({
+         ...prev,
+         [name]: value,
+      }));
+   };
 
    const handleClear = async () => {
       setFormData({
@@ -63,14 +71,6 @@ const ManagersPage: FC<ManagersPageProps> = () => {
       });
    }
 
-   const handleInputChange = (e) => {
-      const { name, value } = e.target;
-      setFormData((prev) => ({
-         ...prev,
-         [name]: value,
-      }));
-   };
-
    const handleConfirm = async () => {
       setLoading(true);
 
@@ -81,24 +81,23 @@ const ManagersPage: FC<ManagersPageProps> = () => {
             hireDate: formData.hireDate ? new Date(formData.hireDate).toISOString() : null,
          };
 
-         const response = await axios.post(`${apiUrl}/auth/register_manager`, transformedData);
+         const response = await axios.post(`${apiUrl}/auth/register_Admin`, transformedData);
 
-         console.log("Manager added successfully:", response.data);
-
+         console.log("Admin added successfully:", response.data);
          handleClear();
       } catch (error) {
-         console.error("Error adding manager:", error);
+         console.error("Error adding Admin:", error);
       } finally {
          setLoading(false);
       }
    };
 
    return (
-      <ManagersPageWrapper>
-         <ManagersPageContainer>
-            <ManagersHeaderContainer>
+      <AdminsPageWrapper>
+         <AdminsPageContainer>
+            <AdminsHeaderContainer>
                <Form>
-                  <HeaderText>Add manager</HeaderText>
+                  <HeaderText>Add Admin</HeaderText>
                   <Form.Group className="mb-3 d-flex">
                      <Form.Label style={{ color: "white" }} className="me-2">Name:</Form.Label>
                      <Form.Control
@@ -209,14 +208,14 @@ const ManagersPage: FC<ManagersPageProps> = () => {
                         placeholder="Enter password"
                      />
                   </Form.Group>
-                  <Button style={{ width: "100%" }} variant="success" onClick={handleConfirm}>
-                     {loading ? <><Spinner animation="border" style={{ width: '18px', height: '18px' }} /> Loading...</> : <><FontAwesomeIcon style={{ marginRight: "4px" }} icon={faPlus} /> Add manager</>}
+                  <Button style={{ width: "100%" }} variant="success" onClick={handleConfirm}> 
+                     {loading ? <Spinner animation="border" style={{ width: '18px', height: '18px' }} /> : <><FontAwesomeIcon style={{ marginRight: "4px" }} icon={faPlus} /> Add admin</>}
                   </Button>
                </Form>
-            </ManagersHeaderContainer>
-         </ManagersPageContainer>
-      </ManagersPageWrapper >
+            </AdminsHeaderContainer>
+         </AdminsPageContainer>
+      </AdminsPageWrapper >
    );
 };
 
-export default ManagersPage;
+export default AdminsPage;

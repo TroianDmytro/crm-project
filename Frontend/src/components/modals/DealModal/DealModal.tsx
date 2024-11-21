@@ -6,70 +6,71 @@ import axios from 'axios';
 import "./../Modal.css";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheck, faXmark, faPenToSquare, faTrash, faCartFlatbed } from '@fortawesome/free-solid-svg-icons'
+import { faCheck, faXmark, faPenToSquare, faTrash, faClockRotateLeft, faPlus } from '@fortawesome/free-solid-svg-icons'
 
 import { apiUrl } from '../../config.ts';
 
-type Category = {
+type Client = {
    id: string;
    name: string;
-}
-
-type FormData = {
-   name: string;
-   price: number;
-   description?: string;
-   categorys?: Category | null;
-   availabilityStatus?: string;
-   photoBlob?: Uint8Array;
-   quantity: number;
+   lastName: string;
+   email: string;
+   phoneNumber: string;
+   address: string;
+   companyName: string;
+   notes?: string;
+   createdAt: string;
+   updatedAt: string;
+   isActive: boolean;
 };
 
-const ProductModal = ({ show, handleClose, product, onProductUpdated }) => {
+type FormData = {
+   title: string;
+   amount: number;
+   expectedCloseDate: string;
+   status: string;
+   createdAt: string;
+   client: Client | null | string;
+   clientName: string;
+   clientLastName: string;
+};
+
+const DealModal = ({ show, handleClose, deal, onDealUpdated }) => {
    const [loading, setLoading] = useState(false);
 
    const [currentState, setCurrentState] = useState("default");
-   const [status, setStatus] = useState("Out of stock");
+   const [status, setStatus] = useState("Done");
 
-   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-   const [categories, setCategories] = useState<Category[]>([]);
    const [formData, setFormData] = useState<FormData>({
-      name: "",
-      price: 0,
-      description: "",
-      categorys: null,
-      availabilityStatus: "Out of stock",
-      quantity: 0
+      title: "",
+      amount: 0,
+      expectedCloseDate: "",
+      status: "Done",
+      createdAt: "",
+      client: null,
+      clientName: "",
+      clientLastName: ""
    });
 
    useEffect(() => {
-      const fetchCategories = async () => {
-         try {
-            const response = await axios.get(`${apiUrl}/category`);
-            setCategories(response.data);
-         } catch (error) {
-            console.error('Error fetching categories:', error);
-         }
-      };
-
       if (show) {
-         fetchCategories();
-
          setCurrentState("default");
       }
    }, [show]);
 
-   if (!product) return null;
+   if (!deal) return null;
 
    const handleEdit = () => {
-      setStatus(product.availabilityStatus);
+      setStatus(deal.isActive);
       setFormData({
-         name: product.name,
-         price: product.price,
-         description: product.description,
-         categorys: product.categorys,
-         availabilityStatus: product.availabilityStatus,
-         quantity: product.quantityStock
+         title: deal.title,
+         amount: deal.amount,
+         expectedCloseDate: deal.expectedCloseDate,
+         status: deal.status,
+         createdAt: deal.createdAt,
+         client: deal.client,
+         clientName: deal.client.name,
+         clientLastName: deal.client.lastName
       });
       setCurrentState("edit");
    };
@@ -86,47 +87,41 @@ const ProductModal = ({ show, handleClose, product, onProductUpdated }) => {
       setLoading(true);
       if (currentState === "edit") {
          try {
-            await axios.put(`${apiUrl}/product/edit/${product.productId}`, {
+            await axios.put(`${apiUrl}/deal/edit/${deal.id}`, {
                ...formData,
-               photoBlob: formData.photoBlob || null,
-               availabilityStatus: status,
+               status: status,
             });
-            onProductUpdated();
+            onDealUpdated();
 
             handleClose();
          } catch (error) {
-            console.error("Error updating product:", error);
+            console.error("Error updating deal:", error);
          } finally {
             setLoading(false);
          }
       } else if (currentState === "delete") {
          try {
-            await axios.delete(`${apiUrl}/product/remove/${product.productId}`);
-            onProductUpdated();
+            await axios.delete(`${apiUrl}/deal/remove/${deal.id}`);
+            onDealUpdated();
 
             handleClose();
          } catch (error) {
-            console.error("Error deleting product:", error);
+            console.error("Error deleting deal:", error);
          } finally {
             setLoading(false);
          }
       }
    };
 
-   const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-      const selectedValue = event.target.value;
-      setSelectedCategory(selectedValue);
-   };
-
    const handleStatusChange = () => {
-      if (status === "Out of stock") {
-         setStatus("To order");
+      if (status === "Done") {
+         setStatus("New");
       }
-      else if (status === "To order") {
-         setStatus("In stock");
+      else if (status === "New") {
+         setStatus("In process");
       }
       else {
-         setStatus("Out of stock");
+         setStatus("Done");
       }
    };
 
@@ -153,7 +148,7 @@ const ProductModal = ({ show, handleClose, product, onProductUpdated }) => {
                justifyContent: "space-between"
             }}
          >
-            <Modal.Title>Product details</Modal.Title>
+            <Modal.Title>Deal details</Modal.Title>
             <FontAwesomeIcon
                icon={faXmark}
                onClick={handleClose}
@@ -167,89 +162,97 @@ const ProductModal = ({ show, handleClose, product, onProductUpdated }) => {
             <Modal.Body className='Dark'>
                <Form>
                   <Form.Group className="mb-3 d-flex">
-                     <Form.Label className="me-2">Name:</Form.Label>
+                     <Form.Label className="me-2">Title:</Form.Label>
                      <Form.Control
                         type="text"
-                        name="name"
-                        value={formData.name}
+                        name="title"
+                        value={formData.title}
                         onChange={handleInputChange}
-                        placeholder="Enter name"
+                        placeholder="Enter title"
                      />
                   </Form.Group>
                   <Form.Group className="mb-3 d-flex">
-                     <Form.Label className="me-2">Price:</Form.Label>
+                     <Form.Label className="me-2">Amount:</Form.Label>
                      <Form.Control
                         type="text"
-                        name="price"
-                        value={formData.price}
+                        name="amount"
+                        value={formData.amount}
                         onChange={handleInputChange}
-                        placeholder="Enter price"
+                        placeholder="Enter amount"
                      />
                   </Form.Group>
                   <Form.Group className="mb-3 d-flex">
-                     <Form.Label className="me-2">Description:</Form.Label>
+                     <Form.Label className="me-2">Expected close date:</Form.Label>
                      <Form.Control
                         type="text"
-                        name="description"
-                        value={formData.description}
+                        name="expectedCloseDate"
+                        value={formData.expectedCloseDate}
                         onChange={handleInputChange}
-                        placeholder="Enter description"
+                        placeholder="Enter expected close date"
                      />
-                  </Form.Group>
-                  <Form.Group className="mb-3 d-flex">
-                     <Form.Label className="me-2">Category:</Form.Label>
-                     <Form.Select
-                        value={selectedCategory || ''}
-                        onChange={handleCategoryChange}
-                     >
-                        <option value="" disabled>
-                           Select a category
-                        </option>
-                        {categories.map((category) => (
-                           <option key={category.id} value={category.id}>
-                              {category.name}
-                           </option>
-                        ))}
-                     </Form.Select>
                   </Form.Group>
                   <Form.Group className="mb-3 d-flex">
                      <Form.Label className="me-2">Status:</Form.Label>
                      <Button variant={status === "In stock" ? "success" : status === "To order" ? "warning" : "danger"} onClick={handleStatusChange}>
-                        {status === "In stock" ? (
-                           <FontAwesomeIcon style={{ color: "white", marginRight: "4px" }} icon={faCheck} />
-                        ) : status === "To order" ? (
-                           <FontAwesomeIcon style={{ color: "rgb(27, 31, 35)", marginRight: "4px" }} icon={faCartFlatbed} />
+                        {deal.status === "New" ? (
+                           <FontAwesomeIcon style={{ marginRight: "4px" }} icon={faPlus} />
+                        ) : deal.status === "In process" ? (
+                           <FontAwesomeIcon style={{ marginRight: "4px" }} icon={faClockRotateLeft} />
                         ) : (
-                           <FontAwesomeIcon style={{ color: "white", marginRight: "4px" }} icon={faXmark} />
+                           <FontAwesomeIcon style={{ marginRight: "4px" }} icon={faCheck} />
                         )}
                         {status}
                      </Button>
+                  </Form.Group>
+                  <Form.Group className="mb-3 d-flex">
+                     <Form.Label className="me-2">Created at:</Form.Label>
+                     <Form.Control
+                        type="text"
+                        name="createdAt"
+                        value={formData.createdAt}
+                        onChange={handleInputChange}
+                        placeholder="Created at"
+                     />
+                  </Form.Group>
+                  <Form.Group className="mb-3 d-flex">
+                     <Form.Label className="me-2">Client Name:</Form.Label>
+                     <Form.Control
+                        type="text"
+                        name="clientName"
+                        value={formData.clientName}
+                        onChange={handleInputChange}
+                        placeholder="Enter client name"
+                     />
+                  </Form.Group>
+                  <Form.Group className="mb-3 d-flex">
+                     <Form.Label className="me-2">Client Last Name:</Form.Label>
+                     <Form.Control
+                        type="text"
+                        name="clientLastName"
+                        value={formData.clientLastName}
+                        onChange={handleInputChange}
+                        placeholder="Enter client last name"
+                     />
                   </Form.Group>
                </Form>
             </Modal.Body>
          ) : (
             <Modal.Body className='Dark'>
-               <h5 style={{ marginBottom: "18px" }}>Name: {product?.name}</h5>
-               <p><strong>Price:</strong> {product?.price}</p>
-               <p><strong>Description:</strong> {product?.description}</p>
-               <p><strong>Category:</strong> {product?.categorys.name}</p>
+               <p><strong>Title:</strong> {deal?.title}</p>
+               <p><strong>Amount:</strong> {deal?.amount}</p>
+               <p><strong>Expected close date:</strong> {deal?.expectedCloseDate ? new Date(deal?.expectedCloseDate).toLocaleString() : 'N/A'}</p>
                <p><strong style={{ marginRight: "4px" }}>Status:</strong>
-                  {product.availabilityStatus === "In stock" ? (
-                     <FontAwesomeIcon style={{ marginRight: "4px" }} icon={faCheck} />
-                  ) : product.availabilityStatus === "To order" ? (
-                     <FontAwesomeIcon style={{ marginRight: "4px" }} icon={faCartFlatbed} />
+                  {deal.status === "New" ? (
+                     <FontAwesomeIcon style={{ marginRight: "4px" }} icon={faPlus} />
+                  ) : deal.status === "In process" ? (
+                     <FontAwesomeIcon style={{ marginRight: "4px" }} icon={faClockRotateLeft} />
                   ) : (
-                     <FontAwesomeIcon style={{ marginRight: "4px" }} icon={faXmark} />
+                     <FontAwesomeIcon style={{ marginRight: "4px" }} icon={faCheck} />
                   )}
-                  {product.availabilityStatus}
+                  {deal.status}
                </p>
-               {product.photoBase64 ? (
-                  <img
-                     src={`data:image/png;base64,${product.photoBase64}`}
-                     alt="Product photo"
-                  />
-               ) : (<>lol</>)}
-               <p><strong>Quantity:</strong> {product?.quantity}</p>
+               <p><strong>Created at:</strong> {new Date(deal?.createdAt).toLocaleString()}</p>
+               <p><strong>Title:</strong> {deal?.title}</p>
             </Modal.Body>
          )}
          <Modal.Footer
@@ -284,4 +287,4 @@ const ProductModal = ({ show, handleClose, product, onProductUpdated }) => {
    );
 };
 
-export default ProductModal;
+export default DealModal;
