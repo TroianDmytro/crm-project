@@ -17,7 +17,7 @@ namespace CRM_Server_API.Mapping
 
             CreateMap<Client, ClientDTO>()
                 .ForMember(
-                    dest => dest.DealDTOs, 
+                    dest => dest.DealDTOs,
                     opt => opt.MapFrom(src => src.Deals)
                 )
                 .ReverseMap()
@@ -27,11 +27,11 @@ namespace CRM_Server_API.Mapping
                 );
 
             /////////////////////////////////////////////////////////////////////
-           
+
             // Мапинг Deal -> DealDTO
             CreateMap<Deal, DealDTO>()
                 .ForMember(
-                dest => dest.ProductDTOs, 
+                dest => dest.ProductDTOs,
                 opt => opt.MapFrom(src => src.DealProducts.Select(dp => dp.Product))) // Мапинг связанных продуктов
                 .ReverseMap();
 
@@ -41,7 +41,7 @@ namespace CRM_Server_API.Mapping
                 .ReverseMap();
 
             /////////////////////////////////////////////////////////////////////
-            
+
             CreateMap<RegisterModelDTO, EmployeeRegisterModel>();
 
             CreateMap<DealProduct, DealProductDTO>()
@@ -77,15 +77,21 @@ namespace CRM_Server_API.Mapping
 
             /////////////////////////////////////////////////////////////////////
 
-            CreateMap<Warehouse, WarehouseDTO>().ReverseMap();
+            CreateMap<Warehouse, WarehouseDTO>()
+                  .ForMember(
+                        obj => obj.ProductDTOs,
+                        opt => opt.MapFrom(src => src.WarehouseProducts.Select(p => p.Products)))
+                  .ReverseMap();
+
             CreateMap<WarehouseDTO, WarehouseRequest>().ReverseMap();
 
             /////////////////////////////////////////////////////////////////////
-            CreateMap<WarehouseProductRequest, WarehouseDTO>();
+            CreateMap<WarehouseProductRequest, WarehouseProductDTO>();
+            CreateMap<WarehouseProductDTO, WarehouseProduct>().ReverseMap();
 
 
-            
-           
+
+
 
         }
     }

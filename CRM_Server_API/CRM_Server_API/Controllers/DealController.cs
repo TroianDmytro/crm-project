@@ -83,7 +83,7 @@ namespace CRM_Server_API.Controllers
         /// <returns>Возвращает код 200 при успешном создании сделки</returns>
         /// <returns>Возвращает код 404 если клиент с указанным ID не найден</returns>
         [HttpPost("create/")]
-        public async Task<IActionResult> AddDeal([FromForm] DealRequest dealRequest)
+        public async Task<IActionResult> AddDeal([FromBody] DealRequest dealRequest)
         {
             var client = await _clientService.GetClientById(dealRequest.ClientId);
 
@@ -106,7 +106,7 @@ namespace CRM_Server_API.Controllers
         /// <returns>Возвращает код 200 и сообщение при успешном добавлении продукта в сделку</returns>
         /// <returns>Возвращает код 404 если продукт или сделка с указанным ID не найдены</returns>
         [HttpPost("add_product_to_deal/")]
-        public async Task<IActionResult> AddProductToDeal([FromForm] DealProductDTO dealProductDTO)
+        public async Task<IActionResult> AddProductToDeal([FromBody] DealProductDTO dealProductDTO)
         {
             try
             {
@@ -128,7 +128,7 @@ namespace CRM_Server_API.Controllers
         /// <param name="dealUpdate">Обновленные данные сделки в формате</param>
         /// <returns>Возвращает код 200 при успешном изменении сделки. Возвращает код 404 если сделка с указанным ID не найдена</returns>
         [HttpPut("edit/{id}")]
-        public async Task<IActionResult> UpdateDeal(Guid id, [FromForm] DealUpdate dealUpdate)
+        public async Task<IActionResult> UpdateDeal(Guid id, [FromBody] DealUpdate dealUpdate)
         {
             bool deal = await _dealService.DealIsExists(id);
             if (!deal)

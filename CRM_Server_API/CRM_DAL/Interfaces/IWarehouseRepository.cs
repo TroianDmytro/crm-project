@@ -6,10 +6,9 @@ namespace CRM_DAL.Interfaces
     {
         Task<IEnumerable<Warehouse>> GetAllWithProductAsync();
         Task<Warehouse?> GetByIdWithProductsAsync(Guid id);
-        Task UpdateProductQuantitySubtracting(Guid id, int quantity);
-        Task UpdateProductQuantityAdd(Guid id, int quantity);
+        Task UpdateProductQuantitySubtracting(Guid warehouseid, Guid productId, int quantity);
+        Task UpdateProductQuantityAdd(Guid warehouseid,Guid productId, int quantity);
         Task AddProductToWarehouse(WarehouseProduct warehouseProduct);
         Task DeleteProductWithWarehouseAsync(Guid warehouseId, Guid productId);
     }
-
 }

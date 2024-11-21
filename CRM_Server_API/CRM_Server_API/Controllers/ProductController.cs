@@ -68,7 +68,7 @@ namespace CRM_Server_API.Controllers
         /// <returns>Возвращает код 200 при успешном добавлении продукта</returns>
         /// <returns>Возвращает код 400 при неправильной валидации данных</returns>
         [HttpPost("add/")]
-        public async Task<IActionResult> AddProduct([FromForm] ProductRequest productRequest)
+        public async Task<IActionResult> AddProduct([FromBody] ProductRequest productRequest)
         {
             ProductDTO productDTO = _mapper.Map<ProductDTO>(productRequest);
             await _productService.AddProductAsync(productDTO);
@@ -85,7 +85,7 @@ namespace CRM_Server_API.Controllers
         /// <returns>Возвращает код 204 при успешном обновлении продукта</returns>
         /// <returns>Возвращает код 404 если продукт с указанным ID не найден</returns>
         [HttpPut("edit/{id}")]
-        public async Task<IActionResult> UpdateProduct(Guid id, [FromForm] ProductRequest request)
+        public async Task<IActionResult> UpdateProduct(Guid id, [FromBody] ProductRequest request)
         {
             bool productIsExists = await _productService.ProductIsExists(id);
             if (!productIsExists)

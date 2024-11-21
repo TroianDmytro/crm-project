@@ -14,7 +14,7 @@ namespace CRM_Business_Layer.DTO
         public DateTime CreatedAt { get; set; }
 
         public DateTime? UpdatedAt { get; set; }
-        //public ICollection<ProductDTO> ProductDTOs { get; set; } = [];//список продуктов
+        public ICollection<ProductDTO> ProductDTOs { get; set; } = [];//список продуктов
 
 
     }

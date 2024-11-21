@@ -30,8 +30,23 @@ namespace CRM_DAL.Repositories
             List<Warehouse> warehouses = await _context.Warehouses
                 .Include(wp => wp.WarehouseProducts)
                 .ThenInclude(p => p.Products)
+                .ThenInclude(c=>c.Categorys)
                 .ToListAsync();
 
+            // Проходим по каждому
+            foreach (var warehouse in warehouses)
+            {
+                foreach (var prod in warehouse.WarehouseProducts)
+                {
+                    var product = prod.Products;
+
+                    // Если продукт найден, присваиваем его количество
+                    if (product != null)
+                    {
+                        product.Quantity = prod.QuantityStock;
+                    }
+                }
+            }
             return warehouses;
         }
 
@@ -107,9 +122,9 @@ namespace CRM_DAL.Repositories
         /// <param name="id">id записи склад-продукт</param>
         /// <param name="quantity">Количество которое отнимется</param>
         /// <returns></returns>
-        public async Task UpdateProductQuantitySubtracting(Guid id, int quantity)
+        public async Task UpdateProductQuantitySubtracting(Guid warehouseid, Guid productId, int quantity)
         {
-            WarehouseProduct? warehouse = await _context.WarehouseProducts.FirstOrDefaultAsync(wp => wp.Id == id);
+            WarehouseProduct? warehouse = await _context.WarehouseProducts.FirstOrDefaultAsync(wp => wp.WarehouseId == warehouseid && wp.ProductId == productId);
 
             if (warehouse == null)
                 return;
@@ -131,9 +146,9 @@ namespace CRM_DAL.Repositories
         /// <param name="quantity">Количество которое добавится</param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>
-        public async Task UpdateProductQuantityAdd(Guid id, int quantity)
+        public async Task UpdateProductQuantityAdd(Guid warehouseid, Guid productId, int quantity)
         {
-            WarehouseProduct? warehouse = await _context.WarehouseProducts.FirstOrDefaultAsync(wp => wp.Id == id);
+            WarehouseProduct? warehouse = await _context.WarehouseProducts.FirstOrDefaultAsync(wp => wp.WarehouseId == warehouseid && wp.ProductId==productId);
 
             if (warehouse == null)
                 return;
@@ -185,5 +200,6 @@ namespace CRM_DAL.Repositories
             await _context.WarehouseProducts.Where(wp => wp.WarehouseId == warehouseId && wp.ProductId == productId).ExecuteDeleteAsync();
         }
 
+       
     }
 }
