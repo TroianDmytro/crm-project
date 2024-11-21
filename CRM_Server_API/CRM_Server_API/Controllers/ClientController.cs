@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using CRM_Business_Layer.DTO;
 using CRM_Business_Layer.Interfaces;
+using CRM_DAL.Entitys;
+using CRM_Server_API.Blobs;
 using CRM_Server_API.Models.Request;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,10 +16,12 @@ namespace CRM_Server_API.Controllers
     {
         private readonly IClientService _clientService;
         private readonly IMapper _mapper;
-        public ClientController(IClientService clientService, IMapper mapper)
+        private readonly BlobModul _blobModul;
+        public ClientController(IClientService clientService, IMapper mapper, BlobModul blobModul)
         {
             _clientService = clientService;
             _mapper = mapper;
+            _blobModul = blobModul;
         }
 
         /// <summary>
@@ -30,6 +34,18 @@ namespace CRM_Server_API.Controllers
         public async Task<IActionResult> GetAll()
         {
             IEnumerable<ClientDTO> result = await _clientService.GetAllClient();
+
+            foreach (ClientDTO client in result)
+            {
+                foreach (var deal in client.DealDTOs)
+                {
+                    foreach (var product in deal.ProductDTOs)
+                    {
+                        if (product.PhotoBlob != null)
+                            product.PhotoBlob = await _blobModul.Download(product.PhotoBlob);
+                    }
+                }
+            }
             return Ok(result.ToList());
         }
 
@@ -47,6 +63,16 @@ namespace CRM_Server_API.Controllers
             ClientDTO result = await _clientService.GetClientById(id);
             if (result == null)
                 return BadRequest();
+
+            foreach (var deal in result.DealDTOs)
+            {
+                foreach (var product in deal.ProductDTOs)
+                {
+                    if (product.PhotoBlob != null)
+                        product.PhotoBlob = await _blobModul.Download(product.PhotoBlob);
+                }
+            }
+
             return Ok(result);
         }
 
@@ -77,17 +103,26 @@ namespace CRM_Server_API.Controllers
         /// <param name="clientRequest">Данные клиента в формате <see cref="ClientRequest"/></param>
         /// <returns>Возвращает обновленные данные клиента в формате <see cref="ClientDTO"/></returns>
         /// <returns>Возвращает код 200 при успешном обновлении клиента</returns>
-        /// <returns>Возвращает код 400 если не удалось обновить клиента</returns>
+        /// <returns>Возвращает код 404 если не удалось обновить клиента</returns>
         // PUT client/edit/5
         [HttpPut("edit/{id}")] // настроить дату обновления
         public async Task<IActionResult> Put(Guid id, [FromBody] ClientRequest clientRequest)
         {
-            ClientDTO clientDTO = _mapper.Map<ClientDTO>(clientRequest);
-            clientDTO.Id = id;
-            ClientDTO updateClientDTO = await _clientService.UpdateClient(clientDTO);
+            ClientDTO? clientDTO = await _clientService.GetClientById(id);
 
-            if (updateClientDTO == null)
-                return BadRequest();
+            if (clientDTO == null)
+                return NotFound("Not found client.");
+
+            clientDTO.Name = clientRequest.Name ?? clientDTO.Name;
+            clientDTO.LastName = clientRequest.LastName ?? clientDTO.LastName;
+            clientDTO.Email = clientRequest.Email ?? clientDTO.Email;
+            clientDTO.PhoneNumber = clientRequest.PhoneNumber ?? clientDTO.PhoneNumber;
+            clientDTO.Address = clientRequest.Address ?? clientDTO.Address;
+            clientDTO.CompanyName = clientRequest.CompanyName ?? clientDTO.CompanyName;
+            clientDTO.Notes = clientRequest.Notes ?? clientDTO.Notes;
+            clientDTO.IsActive = (bool)(clientRequest.IsActive ?? clientRequest.IsActive);
+
+            ClientDTO updateClientDTO = await _clientService.UpdateClient(clientDTO);
 
             return Ok(updateClientDTO);
         }

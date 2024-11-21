@@ -73,9 +73,5 @@ namespace CRM_Business_Layer.Services
         {
             throw new NotImplementedException();
         }
-
-
-
-
     }
 }

@@ -21,7 +21,7 @@ namespace CRM_DAL.Entitys
         public string? AvailabilityStatus { get; set; } // например, "В наличии", "Под заказ", "Нет в наличии" 
 
         public string? PhotoBlob { get; set; }
-
+        public int Quantity { get; set; }
         [Required]
         public ICollection<DealProduct> DealProducts { get; set; } //  Связь с сделками
 

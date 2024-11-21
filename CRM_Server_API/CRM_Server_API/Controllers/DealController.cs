@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using CRM_Business_Layer.DTO;
 using CRM_Business_Layer.Interfaces;
+using CRM_DAL.Entitys;
+using CRM_Server_API.Blobs;
 using CRM_Server_API.Models.Request;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,12 +16,18 @@ namespace CRM_Server_API.Controllers
         private readonly IDealProductService _dealProductService;
         private readonly IClientService _clientService;
         private readonly IMapper _mapper;
-        public DealController(IMapper mapper, IDealService dealService, IDealProductService dealProductService, IClientService clientService)
+        private readonly BlobModul _blobModul;
+        public DealController(IMapper mapper,
+            IDealService dealService,
+            IDealProductService dealProductService,
+            IClientService clientService,
+            BlobModul blobModul)
         {
             _mapper = mapper;
             _dealService = dealService;
             _dealProductService = dealProductService;
             _clientService = clientService;
+            _blobModul = blobModul;
         }
 
         /// <summary>
@@ -31,6 +39,16 @@ namespace CRM_Server_API.Controllers
         public async Task<IActionResult> GetDealList()
         {
             var dealsList = await _dealService.GetAllDealsAsync();
+
+            foreach (var deal in dealsList)
+            {
+                foreach (var product in deal.ProductDTOs)
+                {
+                    if (product.PhotoBlob != null)
+                        product.PhotoBlob = await _blobModul.Download(product.PhotoBlob);
+                }
+            }
+
             return Ok(dealsList);
         }
 
@@ -47,6 +65,12 @@ namespace CRM_Server_API.Controllers
             var deal = await _dealService.GetDealByIdAsync(id);
             if (deal == null)
                 return NotFound("Deal with this Id not found");
+
+            foreach (var product in deal.ProductDTOs)
+            {
+                if (product.PhotoBlob != null)
+                    product.PhotoBlob = await _blobModul.Download(product.PhotoBlob);
+            }
 
             return Ok(deal);
         }
@@ -110,7 +134,7 @@ namespace CRM_Server_API.Controllers
             if (!deal)
                 return NotFound($"Deal with id {id} not found");
 
-            await _dealService.UpdateDealAsync(id,dealUpdate);
+            await _dealService.UpdateDealAsync(id, dealUpdate);
 
             return Ok("Deal updated successfully");
         }

@@ -1,5 +1,4 @@
-﻿using CRM_DAL.Entitys;
-
+﻿
 namespace CRM_Server_API.Models.Responce
 {
     public class ProductResponce
