@@ -1,1 +1,1 @@
-export const apiUrl = '';
+export const apiUrl = 'https://crmserverapi20241116153202.azurewebsites.net';
